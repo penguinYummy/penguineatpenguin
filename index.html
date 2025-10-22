@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>실시간 채팅방 (메시지 초기화 기능)</title>
+    <title>채팅방</title>
     <style>
         /* [스타일 조정 시작] */
         body {
@@ -14,10 +14,9 @@
             color: #333;
             text-align: center;
         }
-
         /* 닉네임 입력 화면 스타일 */
         #nickname-screen {
-            display: flex; /* 초기에는 flex로 보이도록 설정 */
+            display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
@@ -38,7 +37,7 @@
 
         /* 채팅방 화면 스타일 */
         #chat-app {
-            display: none; /* 초기에는 숨김 */
+            display: none;
             max-width: 600px;
             margin: 20px auto;
             background-color: #fff;
@@ -73,7 +72,7 @@
         /* 입력 폼 및 초기화 버튼 스타일 */
         #controls {
             display: flex;
-            gap: 10px; /* 버튼과 폼 사이 간격 */
+            gap: 10px;
         }
         #message-form {
             display: flex;
@@ -104,7 +103,7 @@
         /* 메시지 초기화 버튼 스타일 */
         #clear-messages-btn {
             padding: 10px 15px;
-            background-color: #dc3545; /* 빨간색 */
+            background-color: #dc3545;
             color: white;
             border: none;
             border-radius: 4px;
@@ -152,17 +151,17 @@
 
 
     <script>
-        
-         const firebaseConfig = {
-    apiKey: "AIzaSyB_nt4nzPfp-trlT8QHNFPFpd-oKqfyWGo",
-    authDomain: "penguineatpenguin.firebaseapp.com",
-    projectId: "penguineatpenguin",
-    storageBucket: "penguineatpenguin.firebasestorage.app",
-    messagingSenderId: "757747390049",
-    appId: "1:757747390049:web:72bcdc12d5eb3bc1b97c20",
-    measurementId: "G-XCT650Z39X"
-  };
-
+        // 🚨 여기에 복사한 Firebase 설정 코드 붙여넣기 🚨
+        const firebaseConfig = {
+          apiKey: "YOUR_API_KEY",
+          authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+          databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+          projectId: "YOUR_PROJECT_ID",
+          storageBucket: "YOUR_PROJECT_ID.appspot.com",
+          messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+          appId: "YOUR_APP_ID"
+        };
+        // ----------------------------------------------------
         
         // Firebase 초기화
         firebase.initializeApp(firebaseConfig);
@@ -177,11 +176,11 @@
         const messageForm = document.getElementById('message-form');
         const messageInput = document.getElementById('message-input');
         const messagesContainer = document.getElementById('messages');
-        const clearBtn = document.getElementById('clear-messages-btn'); // 초기화 버튼 추가
+        const clearBtn = document.getElementById('clear-messages-btn');
         
         let userNickname = '';
 
-        /* ---------- 닉네임 입력 로직 (이전과 동일) ---------- */
+        /* ---------- 닉네임 입력 로직 ---------- */
         nicknameInputForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const nickname = nicknameInput.value.trim();
@@ -189,57 +188,48 @@
             if (nickname) {
                 userNickname = nickname;
                 currentNicknameDisplay.textContent = userNickname;
-
-                // 화면 전환
                 nicknameScreen.style.display = 'none';
                 chatApp.style.display = 'block';
-
                 messageInput.focus();
             }
         });
 
-        /* ---------- 메시지 전송 로직 (방장 플래그 제거) ---------- */
+        /* ---------- 메시지 전송 로직 ---------- */
         messageForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const messageText = messageInput.value.trim();
             
             if (messageText && userNickname) {
-                // Firebase DB에 닉네임과 메시지만 저장
                 messagesRef.push({
                     nickname: userNickname,
                     text: messageText,
                     timestamp: Date.now()
                 });
-
                 messageInput.value = '';
             }
         });
 
-        /* ---------- 실시간 메시지 수신 및 표시 로직 (관리자 스타일 제거) ---------- */
+        /* ---------- 실시간 메시지 수신 및 표시 로직 ---------- */
         messagesRef.on('child_added', (snapshot) => {
             const messageData = snapshot.val();
             const messageElement = document.createElement('p');
             
-            // 닉네임과 메시지를 <p> 태그 안에 조합하여 표시
             messageElement.innerHTML = `<span class="message-nickname">${messageData.nickname}:</span> ${messageData.text}`;
             
             messagesContainer.appendChild(messageElement);
             
-            // 스크롤을 항상 최신 메시지로 이동
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         });
 
-        /* ---------- 메시지 전체 삭제 기능 추가 ---------- */
+        /* ---------- 메시지 전체 삭제 기능 ---------- */
         clearBtn.addEventListener('click', () => {
-            // 사용자에게 정말 삭제할 것인지 최종 확인
             const isConfirmed = confirm("경고! 채팅방의 모든 메시지를 정말로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.");
             
             if (isConfirmed) {
-                // messages 경로에 있는 모든 데이터를 null로 설정 (데이터 삭제)
+                // messages 경로의 모든 데이터를 삭제
                 messagesRef.set(null)
                     .then(() => {
                         alert("모든 채팅 메시지가 삭제되었습니다.");
-                        // 화면에 표시된 메시지도 즉시 제거 (선택 사항)
                         messagesContainer.innerHTML = '';
                     })
                     .catch((error) => {
