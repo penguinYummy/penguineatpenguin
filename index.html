@@ -283,22 +283,27 @@
         });
 
         /* ---------- 메시지 전체 삭제 기능 ---------- */
-        clearBtn.addEventListener('click', () => {
-            const isConfirmed = confirm("경고! 채팅방의 모든 메시지를 정말로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.");
-            
-            if (isConfirmed) {
-                messagesRef.set(null)
-                    .then(() => {
-                        alert("모든 채팅 메시지가 삭제되었습니다.");
-                        messagesContainer.innerHTML = '';
-                    })
-                    .catch((error) => {
-                        console.error("데이터 삭제 실패:", error);
-                        alert("메시지 삭제에 실패했습니다.");
-                    });
-            }
-        });
+clearBtn.addEventListener('click', () => {
+    // 1. 사용자에게 최종 확인을 받습니다.
+    const isConfirmed = confirm("경고! 채팅방의 모든 메시지를 정말로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.");
+    
+    if (isConfirmed) {
+        // 2. 🔥 Firebase 명령: 'messages' 경로의 데이터를 null로 설정합니다.
+        //    -> 이 명령어는 messages 경로 아래의 모든 데이터를 영구적으로 삭제합니다.
+        messagesRef.set(null)
+            .then(() => {
+                // 3. 성공 시: 현재 브라우저의 화면에 있는 메시지도 즉시 제거
+                alert("모든 채팅 메시지가 삭제되었습니다.");
+                messagesContainer.innerHTML = ''; 
+            })
+            .catch((error) => {
+                console.error("데이터 삭제 실패:", error);
+                alert("메시지 삭제에 실패했습니다.");
+            });
+    }
+});
     </script>
 
 </body>
 </html>
+
