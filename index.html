@@ -180,19 +180,39 @@
         
         let userNickname = '';
 
-        /* ---------- 닉네임 입력 로직 ---------- */
-        nicknameInputForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const nickname = nicknameInput.value.trim();
-            
-            if (nickname) {
-                userNickname = nickname;
-                currentNicknameDisplay.textContent = userNickname;
-                nicknameScreen.style.display = 'none';
-                chatApp.style.display = 'block';
-                messageInput.focus();
-            }
-        });
+      const savedNickname = localStorage.getItem('chatNickname');
+
+if (savedNickname) {
+    userNickname = savedNickname; // 저장된 닉네임 사용
+    currentNicknameDisplay.textContent = userNickname;
+    
+    // 화면 전환: 닉네임 입력 화면을 건너뛰고 바로 채팅 화면 보이기
+    nicknameScreen.style.display = 'none';
+    chatApp.style.display = 'block';
+    
+    // 메시지 입력창에 포커스
+    messageInput.focus();
+}
+
+/* ---------- 닉네임 입력/저장 로직 ---------- */
+nicknameInputForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const nickname = nicknameInput.value.trim();
+    
+    if (nickname) {
+        userNickname = nickname;
+        currentNicknameDisplay.textContent = userNickname;
+        
+        // 🚨 2. 저장 로직: 새로운 닉네임을 로컬 스토리지에 저장합니다.
+        localStorage.setItem('chatNickname', nickname); 
+
+        // 화면 전환
+        nicknameScreen.style.display = 'none';
+        chatApp.style.display = 'block';
+
+        messageInput.focus();
+    }
+});
 
         /* ---------- 메시지 전송 로직 ---------- */
         messageForm.addEventListener('submit', (e) => {
@@ -242,5 +262,6 @@
 
 </body>
 </html>
+
 
 
