@@ -2,51 +2,104 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>나만의 웹사이트</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>실시간 채팅 웹사이트</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            background-color: #f0f4f8; /* 밝은 회색 배경 */
+        /* 채팅창 디자인 (선택 사항) */
+        #messages {
+            height: 300px;
+            overflow-y: scroll; /* 스크롤바 */
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            width: 80%;
+            max-width: 600px;
+        }
+        #message-form {
+            display: flex;
+        }
+        #message-input {
+            flex-grow: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+        }
+        #message-form button {
+            padding: 8px 15px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            cursor: pointer;
         }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
-    <div class="bg-white p-8 sm:p-12 rounded-2xl shadow-xl max-w-2xl w-full text-center">
-        <!-- 웹사이트의 제목 -->
-        <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-4">나만의 멋진 웹사이트</h1>
-        
-        <!-- 자기소개 문구 -->
-        <p class="text-gray-600 mb-8 sm:mb-10 text-base sm:text-lg">
-            안녕하세요! 이 웹사이트는 제가 직접 만들었어요. 제가 좋아하는 것들을 소개할게요.
-        </p>
-        
-        <!-- 좋아하는 것들 목록 -->
-        <div class="space-y-6 text-left">
-            <h2 class="text-2xl font-bold text-gray-700 mb-4 text-center">내가 좋아하는 것들</h2>
-            <ul class="space-y-4 text-gray-700">
-                <li class="bg-blue-100 p-4 rounded-lg flex items-center shadow-md">
-                    <span class="mr-3 text-2xl">📚</span>
-                    <span class="text-lg">책 읽기</span>
-                </li>
-                <li class="bg-green-100 p-4 rounded-lg flex items-center shadow-md">
-                    <span class="mr-3 text-2xl">🎮</span>
-                    <span class="text-lg">게임하기</span>
-                </li>
-                <li class="bg-purple-100 p-4 rounded-lg flex items-center shadow-md">
-                    <span class="mr-3 text-2xl">🎶</span>
-                    <span class="text-lg">음악 듣기</span>
-                </li>
-                <li class="bg-red-100 p-4 rounded-lg flex items-center shadow-md">
-                    <span class="mr-3 text-2xl">🍽️</span>
-                    <span class="text-lg">맛있는 음식 먹기</span>
-                </li>
-            </ul>
+<body>
+
+    <h1>실시간 소통 채팅방 </h1>
+
+    <div id="messages">
         </div>
-    </div>
+
+    <form id="message-form">
+        <input type="text" id="message-input" placeholder="메시지를 입력하세요" required>
+        <button type="submit">전송</button>
+    </form>
+
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+
+    <script>
+         const firebaseConfig = {
+    apiKey: "AIzaSyB_nt4nzPfp-trlT8QHNFPFpd-oKqfyWGo",
+    authDomain: "penguineatpenguin.firebaseapp.com",
+    projectId: "penguineatpenguin",
+    storageBucket: "penguineatpenguin.firebasestorage.app",
+    messagingSenderId: "757747390049",
+    appId: "1:757747390049:web:72bcdc12d5eb3bc1b97c20",
+    measurementId: "G-XCT650Z39X"
+  };
+
+        
+
+        // Firebase 초기화
+        firebase.initializeApp(firebaseConfig);
+        
+        // Realtime Database 참조 (채팅 메시지를 저장할 공간)
+        const messagesRef = firebase.database().ref('messages');
+        const form = document.getElementById('message-form');
+        const input = document.getElementById('message-input');
+        const messagesContainer = document.getElementById('messages');
+
+        // 메시지 전송 처리
+        form.addEventListener('submit', (e) => {
+            e.preventDefault(); // 페이지 새로고침 방지
+            const messageText = input.value;
+            
+            if (messageText.trim() === '') return;
+
+            // Firebase DB에 새 메시지 저장
+            messagesRef.push({
+                text: messageText,
+                timestamp: Date.now()
+            });
+
+            input.value = ''; // 입력 필드 초기화
+        });
+
+        // 실시간 메시지 수신 및 표시
+        // 'child_added' 이벤트는 새 메시지가 추가될 때마다 실행됩니다.
+        messagesRef.on('child_added', (snapshot) => {
+            const messageData = snapshot.val();
+            const messageElement = document.createElement('p');
+            
+            // 메시지를 화면에 표시
+            messageElement.textContent = messageData.text; 
+            messagesContainer.appendChild(messageElement);
+            
+            // 스크롤을 항상 최신 메시지로 이동
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        });
+    </script>
+
 </body>
 </html>
