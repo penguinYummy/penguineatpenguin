@@ -30,7 +30,7 @@
     <div id="nickname-screen">
         <h2>채팅방에 오신 것을 환영합니다!</h2>
         <form id="nickname-input-form">
-            <input type="text" id="nickname-input" placeholder="사용할 닉네임을 입력하세요" required maxlength="10">
+            <input type="text" id="nickname-input" placeholder="사용할 닉네임을 입력하세요" required maxlength="10" autocomplete="off">
             <button type="submit">입장</button>
         </form>
     </div>
@@ -43,7 +43,7 @@
 
         <div id="controls">
             <form id="message-form">
-                <input type="text" id="message-input" placeholder="메시지를 입력하세요" required>
+                <input type="text" id="message-input" placeholder="메시지를 입력하세요" required autocomplete="off">
                 <button type="submit">전송</button>
             </form>
             
@@ -207,3 +207,4 @@
 
 </body>
 </html>
+
