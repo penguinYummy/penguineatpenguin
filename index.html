@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Charger Tomato Penguin</title>
+    
     <style>
         /* [스타일 조정 시작] */
         body {
@@ -14,6 +15,7 @@
             color: #333;
             text-align: center;
         }
+
         /* 닉네임 입력 화면 스타일 */
         #nickname-screen {
             display: flex;
@@ -151,21 +153,24 @@
 
 
     <script>
-        // 🚨 여기에 복사한 Firebase 설정 코드 붙여넣기 🚨
+        // 🚨 1. 여기에 복사한 Firebase 설정 코드 붙여넣기 🚨
         const firebaseConfig = {
-          apiKey: "YOUR_API_KEY",
-          authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-          databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-          projectId: "YOUR_PROJECT_ID",
-          storageBucket: "YOUR_PROJECT_ID.appspot.com",
-          messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-          appId: "YOUR_APP_ID"
+          apiKey: "YOUR_FIREBASE_CONFIG_API_KEY",
+          authDomain: "YOUR_FIREBASE_CONFIG_AUTH_DOMAIN",
+          databaseURL: "YOUR_FIREBASE_CONFIG_DATABASE_URL",
+          projectId: "YOUR_FIREBASE_CONFIG_PROJECT_ID",
+          storageBucket: "YOUR_FIREBASE_CONFIG_STORAGE_BUCKET",
+          messagingSenderId: "YOUR_FIREBASE_CONFIG_MESSAGING_SENDER_ID",
+          appId: "YOUR_FIREBASE_CONFIG_APP_ID"
         };
         // ----------------------------------------------------
         
         // Firebase 초기화
         firebase.initializeApp(firebaseConfig);
+        
+        // Firebase 참조
         const messagesRef = firebase.database().ref('messages');
+        const activeNicknamesRef = firebase.database().ref('activeUserNicknames'); // 닉네임 중복 검사를 위한 새 참조
 
         // HTML 요소 선택
         const nicknameScreen = document.getElementById('nickname-screen');
@@ -180,39 +185,72 @@
         
         let userNickname = '';
 
-      const savedNickname = localStorage.getItem('chatNickname');
+        /**
+         * 닉네임을 Firebase에 등록하고 채팅방에 입장시키는 핵심 함수
+         * @param {string} nickname - 등록하려는 닉네임
+         */
+        function registerNickname(nickname) {
+            // Firebase에서 현재 사용 중인 닉네임 목록을 한 번 읽어와서 중복 검사
+            activeNicknamesRef.once('value', (snapshot) => {
+                const usedNicknames = snapshot.val();
+                let isDuplicate = false;
 
-if (savedNickname) {
-    userNickname = savedNickname; // 저장된 닉네임 사용
-    currentNicknameDisplay.textContent = userNickname;
-    
-    // 화면 전환: 닉네임 입력 화면을 건너뛰고 바로 채팅 화면 보이기
-    nicknameScreen.style.display = 'none';
-    chatApp.style.display = 'block';
-    
-    // 메시지 입력창에 포커스
-    messageInput.focus();
-}
+                if (usedNicknames) {
+                    for (let id in usedNicknames) {
+                        if (usedNicknames[id] === nickname) {
+                            isDuplicate = true;
+                            break;
+                        }
+                    }
+                }
 
-/* ---------- 닉네임 입력/저장 로직 ---------- */
-nicknameInputForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const nickname = nicknameInput.value.trim();
-    
-    if (nickname) {
-        userNickname = nickname;
-        currentNicknameDisplay.textContent = userNickname;
-        
-        // 🚨 2. 저장 로직: 새로운 닉네임을 로컬 스토리지에 저장합니다.
-        localStorage.setItem('chatNickname', nickname); 
+                if (isDuplicate) {
+                    // 중복된 경우
+                    alert(`"${nickname}" 닉네임은 이미 사용 중입니다. 다른 닉네임을 입력해 주세요.`);
+                    nicknameInput.value = '';
+                    nicknameInput.focus();
+                    
+                } else {
+                    // 중복되지 않은 경우: 닉네임 등록 및 입장 처리
+                    userNickname = nickname;
+                    currentNicknameDisplay.textContent = userNickname;
+                    
+                    // 🚨 로컬 스토리지에 닉네임 저장 (자동 로그인 기능)
+                    localStorage.setItem('chatNickname', nickname); 
 
-        // 화면 전환
-        nicknameScreen.style.display = 'none';
-        chatApp.style.display = 'block';
+                    // Firebase에 현재 사용자가 닉네임을 사용 중임을 등록
+                    const userRef = activeNicknamesRef.push(nickname); 
+                    
+                    // 🚨 onDisconnect: 브라우저가 닫히거나 연결이 끊기면 DB에서 이 닉네임을 자동 제거 (중복 방지 핵심)
+                    userRef.onDisconnect().remove(); 
+                    
+                    // 화면 전환 및 입장
+                    nicknameScreen.style.display = 'none';
+                    chatApp.style.display = 'block';
+                    messageInput.focus();
+                }
+            });
+        }
 
-        messageInput.focus();
-    }
-});
+
+        /* ---------- 닉네임 로드 및 자동 입장 로직 ---------- */
+        const savedNickname = localStorage.getItem('chatNickname');
+
+        if (savedNickname) {
+            // 저장된 닉네임이 있으면, 중복 검사를 거쳐 바로 등록 시도
+            registerNickname(savedNickname);
+        }
+
+        /* ---------- 닉네임 입력/저장 및 중복 검사 로직 ---------- */
+        nicknameInputForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const nickname = nicknameInput.value.trim();
+            
+            if (nickname) {
+                // 새로운 닉네임을 입력하면 등록 시도 (중복 검사 포함)
+                registerNickname(nickname);
+            }
+        });
 
         /* ---------- 메시지 전송 로직 ---------- */
         messageForm.addEventListener('submit', (e) => {
@@ -246,7 +284,6 @@ nicknameInputForm.addEventListener('submit', (e) => {
             const isConfirmed = confirm("경고! 채팅방의 모든 메시지를 정말로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.");
             
             if (isConfirmed) {
-                // messages 경로의 모든 데이터를 삭제
                 messagesRef.set(null)
                     .then(() => {
                         alert("모든 채팅 메시지가 삭제되었습니다.");
@@ -262,6 +299,3 @@ nicknameInputForm.addEventListener('submit', (e) => {
 
 </body>
 </html>
-
-
-
