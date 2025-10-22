@@ -153,7 +153,7 @@
 
 
     <script>
-         const firebaseConfig = {
+        const firebaseConfig = {
     apiKey: "AIzaSyB_nt4nzPfp-trlT8QHNFPFpd-oKqfyWGo",
     authDomain: "penguineatpenguin.firebaseapp.com",
     projectId: "penguineatpenguin",
@@ -194,6 +194,7 @@
                 let isDuplicate = false;
 
                 if (usedNicknames) {
+                    // 모든 사용 중인 닉네임과 비교
                     for (let id in usedNicknames) {
                         if (usedNicknames[id] === nickname) {
                             isDuplicate = true;
@@ -203,23 +204,26 @@
                 }
 
                 if (isDuplicate) {
-                    // 중복된 경우
+                    // 🚨 중복된 경우: 오류 메시지 출력 후 Local Storage 데이터 제거
                     alert(`"${nickname}" 닉네임은 이미 사용 중입니다. 다른 닉네임을 입력해 주세요.`);
                     nicknameInput.value = '';
                     nicknameInput.focus();
                     
+                    // 💡 핵심 수정: 중복된 닉네임으로 자동 로그인 시도를 막기 위해 로컬 스토리지 데이터 삭제
+                    localStorage.removeItem('chatNickname'); 
+
                 } else {
                     // 중복되지 않은 경우: 닉네임 등록 및 입장 처리
                     userNickname = nickname;
                     currentNicknameDisplay.textContent = userNickname;
                     
-                    // 🚨 로컬 스토리지에 닉네임 저장 (자동 로그인 기능)
+                    // 💡 로컬 스토리지에 닉네임 저장 (성공적으로 등록될 때만 저장)
                     localStorage.setItem('chatNickname', nickname); 
 
                     // Firebase에 현재 사용자가 닉네임을 사용 중임을 등록
                     const userRef = activeNicknamesRef.push(nickname); 
                     
-                    // 🚨 onDisconnect: 브라우저가 닫히거나 연결이 끊기면 DB에서 이 닉네임을 자동 제거 (중복 방지 핵심)
+                    // onDisconnect: 브라우저가 닫히거나 연결이 끊기면 DB에서 이 닉네임을 자동 제거
                     userRef.onDisconnect().remove(); 
                     
                     // 화면 전환 및 입장
@@ -231,21 +235,22 @@
         }
 
 
-        /* ---------- 닉네임 로드 및 자동 입장 로직 ---------- */
+        /* ---------- 닉네임 로드 및 자동 입장 로직 (수정) ---------- */
         const savedNickname = localStorage.getItem('chatNickname');
 
         if (savedNickname) {
-            // 저장된 닉네임이 있으면, 중복 검사를 거쳐 바로 등록 시도
-            registerNickname(savedNickname);
+            // 저장된 닉네임이 있으면, 닉네임 입력 필드에 자동으로 채워둡니다.
+            // (Submit 시에만 registerNickname을 호출하도록 로직 변경)
+            nicknameInput.value = savedNickname; 
         }
 
-        /* ---------- 닉네임 입력/저장 및 중복 검사 로직 ---------- */
+        /* ---------- 닉네임 입력/저장 및 중복 검사 로직 (수정) ---------- */
         nicknameInputForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const nickname = nicknameInput.value.trim();
             
             if (nickname) {
-                // 새로운 닉네임을 입력하면 등록 시도 (중복 검사 포함)
+                // Submit 이벤트가 발생했을 때만 등록 함수 실행 (자동 로그인 시도도 여기서 처리)
                 registerNickname(nickname);
             }
         });
@@ -297,4 +302,3 @@
 
 </body>
 </html>
-
