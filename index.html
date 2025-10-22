@@ -2,46 +2,125 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>실시간 채팅 웹사이트</title>
+    <title>실시간 닉네임 채팅방</title>
     <style>
-        /* 채팅창 디자인 (선택 사항) */
+        /* [스타일 조정 시작] */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f7f6;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        /* 닉네임 입력 화면 스타일 */
+        #nickname-screen {
+            display: flex; /* 초기에는 flex로 보이도록 설정 */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 60vh;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        #nickname-input-form input, #nickname-input-form button {
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        /* 채팅방 화면 스타일 */
+        #chat-app {
+            display: none; /* 초기에는 숨김 */
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        
+        /* 메시지 표시 영역 */
         #messages {
             height: 300px;
-            overflow-y: scroll; /* 스크롤바 */
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 10px;
-            width: 80%;
-            max-width: 600px;
+            overflow-y: auto; 
+            border: 1px solid #eee;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
         }
+        
+        /* 개별 메시지 스타일 */
+        #messages p {
+            margin: 5px 0;
+            line-height: 1.5;
+            word-wrap: break-word; /* 긴 단어 처리 */
+        }
+        .message-nickname {
+            font-weight: bold;
+            color: #007bff; /* 닉네임 색상 */
+            margin-right: 5px;
+        }
+        
+        /* 입력 폼 스타일 */
         #message-form {
             display: flex;
         }
         #message-input {
             flex-grow: 1;
-            padding: 8px;
-            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 4px 0 0 4px;
+            border: 1px solid #007bff;
+            border-right: none;
+            font-size: 14px;
         }
         #message-form button {
-            padding: 8px 15px;
-            background-color: #5cb85c;
+            padding: 10px 15px;
+            background-color: #007bff;
             color: white;
             border: none;
+            border-radius: 0 4px 4px 0;
             cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
         }
+        #message-form button:hover {
+            background-color: #0056b3;
+        }
+        /* [스타일 조정 끝] */
     </style>
 </head>
 <body>
 
-    <h1>실시간 소통 채팅방 </h1>
+    <h1>실시간 닉네임 채팅방 👋</h1>
 
-    <div id="messages">
-        </div>
+    <div id="nickname-screen">
+        <h2>채팅방에 오신 것을 환영합니다!</h2>
+        <form id="nickname-input-form">
+            <input type="text" id="nickname-input" placeholder="사용할 닉네임을 입력하세요" required maxlength="10">
+            <button type="submit">입장</button>
+        </form>
+    </div>
 
-    <form id="message-form">
-        <input type="text" id="message-input" placeholder="메시지를 입력하세요" required>
-        <button type="submit">전송</button>
-    </form>
+    <div id="chat-app">
+        <p>환영합니다! <span id="current-nickname" style="font-weight: bold; color: #dc3545;"></span>님</p>
+        
+        <div id="messages">
+            </div>
+
+        <form id="message-form">
+            <input type="text" id="message-input" placeholder="메시지를 입력하세요" required>
+            <button type="submit">전송</button>
+        </form>
+    </div>
 
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -49,51 +128,77 @@
 
 
     <script>
-         const firebaseConfig = {
-    apiKey: "AIzaSyB_nt4nzPfp-trlT8QHNFPFpd-oKqfyWGo",
-    authDomain: "penguineatpenguin.firebaseapp.com",
-    projectId: "penguineatpenguin",
-    storageBucket: "penguineatpenguin.firebasestorage.app",
-    messagingSenderId: "757747390049",
-    appId: "1:757747390049:web:72bcdc12d5eb3bc1b97c20",
-    measurementId: "G-XCT650Z39X"
-  };
-
-        
+        // 🚨 1. 여기에 복사한 Firebase 설정 코드 붙여넣기 🚨
+        const firebaseConfig = {
+          apiKey: "YOUR_API_KEY",
+          authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+          databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+          projectId: "YOUR_PROJECT_ID",
+          storageBucket: "YOUR_PROJECT_ID.appspot.com",
+          messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+          appId: "YOUR_APP_ID"
+        };
+        // ----------------------------------------------------
 
         // Firebase 초기화
         firebase.initializeApp(firebaseConfig);
-        
-        // Realtime Database 참조 (채팅 메시지를 저장할 공간)
         const messagesRef = firebase.database().ref('messages');
-        const form = document.getElementById('message-form');
-        const input = document.getElementById('message-input');
+
+        // HTML 요소 선택
+        const nicknameScreen = document.getElementById('nickname-screen');
+        const chatApp = document.getElementById('chat-app');
+        const nicknameInputForm = document.getElementById('nickname-input-form');
+        const nicknameInput = document.getElementById('nickname-input');
+        const currentNicknameDisplay = document.getElementById('current-nickname');
+        const messageForm = document.getElementById('message-form');
+        const messageInput = document.getElementById('message-input');
         const messagesContainer = document.getElementById('messages');
+        
+        let userNickname = ''; // 사용자 닉네임을 저장할 변수
 
-        // 메시지 전송 처리
-        form.addEventListener('submit', (e) => {
-            e.preventDefault(); // 페이지 새로고침 방지
-            const messageText = input.value;
+        /* ---------- 닉네임 입력 로직 ---------- */
+        nicknameInputForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const nickname = nicknameInput.value.trim();
             
-            if (messageText.trim() === '') return;
+            if (nickname) {
+                userNickname = nickname; // 닉네임 저장
+                currentNicknameDisplay.textContent = userNickname; // 환영 메시지에 닉네임 표시
 
-            // Firebase DB에 새 메시지 저장
-            messagesRef.push({
-                text: messageText,
-                timestamp: Date.now()
-            });
+                // 화면 전환: 닉네임 입력 화면 숨기고 채팅 화면 보이기
+                nicknameScreen.style.display = 'none';
+                chatApp.style.display = 'block';
 
-            input.value = ''; // 입력 필드 초기화
+                // 채팅 입력창에 바로 포커스
+                messageInput.focus();
+            }
         });
 
-        // 실시간 메시지 수신 및 표시
-        // 'child_added' 이벤트는 새 메시지가 추가될 때마다 실행됩니다.
+        /* ---------- 메시지 전송 로직 ---------- */
+        messageForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const messageText = messageInput.value.trim();
+            
+            if (messageText && userNickname) {
+                // Firebase DB에 닉네임과 메시지를 함께 저장
+                messagesRef.push({
+                    nickname: userNickname,
+                    text: messageText,
+                    timestamp: Date.now()
+                });
+
+                messageInput.value = ''; // 입력 필드 초기화
+            }
+        });
+
+        /* ---------- 실시간 메시지 수신 및 표시 로직 ---------- */
         messagesRef.on('child_added', (snapshot) => {
             const messageData = snapshot.val();
             const messageElement = document.createElement('p');
             
-            // 메시지를 화면에 표시
-            messageElement.textContent = messageData.text; 
+            // 닉네임과 메시지를 <p> 태그 안에 조합하여 표시
+            messageElement.innerHTML = `<span class="message-nickname">${messageData.nickname}:</span> ${messageData.text}`;
+            
             messagesContainer.appendChild(messageElement);
             
             // 스크롤을 항상 최신 메시지로 이동
