@@ -1,60 +1,74 @@
-// HTML 요소 선택 (타이머 관련만)
-const timerDisplay = document.getElementById('elapsed-time');
-const timerStatus = document.getElementById('timer-status');
-
-// 타이머 관련 변수
-let timerInterval = null;
-let secondsElapsed = 0;
-
-
-function formatTime(totalSeconds) {
-    const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
-    const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
-    const seconds = String(totalSeconds % 60).padStart(2, '0');
-    return `${hours}:${minutes}:${seconds}`;
-}
-
-function updateTimerDisplay() {
-    secondsElapsed++;
-    timerDisplay.textContent = formatTime(secondsElapsed);
-}
-
 /**
- * 타이머 시작: 1초마다 카운터를 증가시킴
+ * timer.js: 타이머 기능 로직
  */
-function startTimer() {
-    if (timerInterval !== null) return; // 이미 실행 중이면 중복 실행 방지
 
-    timerInterval = setInterval(updateTimerDisplay, 1000);
-    timerStatus.innerHTML = '현재 상태: <span style="color: green; font-weight: bold;">활성</span>';
-}
+const Timer = (function() {
+    let timerInterval = null;
+    let startTime = 0;
+    let elapsedTime = 0;
+    let isRunning = false;
+    
+    // DOM 요소
+    const timerDisplay = document.getElementById('timer-display');
+    const startBtn = document.getElementById('start-btn');
+    const stopBtn = document.getElementById('stop-btn');
+    const timerTitleElement = document.getElementById('timer-title');
 
-/**
- * 타이머 정지 (app.js에서 호출할 수 있도록 window에 연결)
- */
-window.stopTimer = function() {
-    if (timerInterval !== null) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-    }
-    timerStatus.innerHTML = '현재 상태: <span style="color: red; font-weight: bold;">비활성</span>';
-}
+    function formatTime(ms) {
+        const totalSeconds = Math.floor(ms / 1000);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        const milliseconds = Math.floor((ms % 1000) / 10); 
 
-
-/**
- * 페이지 가시성이 변경될 때 호출되는 핸들러 (app.js에서 호출할 수 있도록 window에 연결)
- */
-window.handleVisibilityChange = function() {
-    // 🚨 타이머 화면이 보일 때만 실행
-    const timerScreen = document.getElementById('timer-screen');
-    if (timerScreen.classList.contains('hidden')) {
-        window.stopTimer(); //念のため停止
-        return; 
+        return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(milliseconds).padStart(2, '0')}`;
     }
 
-    if (document.visibilityState === 'visible') {
-        startTimer();
-    } else {
-        window.stopTimer();
+    function updateTimer() {
+        const now = Date.now();
+        elapsedTime = now - startTime;
+        timerDisplay.textContent = formatTime(elapsedTime);
     }
-}
+
+    function start() {
+        if (!isRunning) {
+            isRunning = true;
+            startTime = Date.now() - elapsedTime; 
+            // config.js에서 설정된 주기 사용
+            timerInterval = setInterval(updateTimer, APP_CONFIG.TIMER_UPDATE_INTERVAL_MS); 
+            
+            startBtn.classList.add('hidden');
+            stopBtn.classList.remove('hidden');
+        }
+    }
+
+    function stop() {
+        if (isRunning) {
+            clearInterval(timerInterval);
+            isRunning = false;
+            
+            startBtn.classList.remove('hidden');
+            stopBtn.classList.add('hidden');
+        }
+    }
+
+    function reset() {
+        stop();
+        elapsedTime = 0;
+        timerDisplay.textContent = formatTime(elapsedTime);
+    }
+
+    // 초기화: config.js 설정 적용
+    if (timerTitleElement) {
+        timerTitleElement.textContent = APP_CONFIG.TIMER_TITLE;
+    }
+    
+    // 외부에 노출할 함수 반환
+    return {
+        start: start,
+        stop: stop,
+        reset: reset
+    };
+})();
+
+// HTML의 onclick에서 접근할 수 있도록 전역에 노출
+window.Timer = Timer;
