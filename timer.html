@@ -162,7 +162,7 @@
 </head>
 <body>
     
-    <h1>순공 시간 측정기</h1>
+    <h1>타이머머</h1>
     
     <div class="timer-app-container">
         
@@ -416,14 +416,14 @@
                 let timeClass = 'detail-time';
                 
                 switch (detail.type) {
-                    case 'start': label = '세션 시작'; break;
+                    case 'start': label = '타이머 시작'; break;
                     case 'pause': 
                         label = '일시 정지'; 
                         timeClass = 'detail-pause'; 
                         if (detail.reason) label += ` (${detail.reason})`;
                         break;
                     case 'resume': label = '다시 시작'; break;
-                    case 'end': label = '세션 종료'; break;
+                    case 'end': label = '타이머 종료'; break;
                     default: label = '기록';
                 }
 
