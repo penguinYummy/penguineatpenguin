@@ -47,7 +47,10 @@ window.stopTimer = function() {
 window.handleVisibilityChange = function() {
     // 🚨 타이머 화면이 보일 때만 실행
     const timerScreen = document.getElementById('timer-screen');
-    if (timerScreen.classList.contains('hidden')) return; 
+    if (timerScreen.classList.contains('hidden')) {
+        window.stopTimer(); //念のため停止
+        return; 
+    }
 
     if (document.visibilityState === 'visible') {
         startTimer();
