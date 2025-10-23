@@ -49,7 +49,7 @@
             box-sizing: border-box; 
         }
         
-        /* --- 공통 버튼 스타일 (3D 및 확대 효과) --- */
+        /* --- 공통 버튼 스타일 (3D 및 확대/눌림 효과) --- */
         .auth-buttons button, 
         .feature-button, 
         .feature-execute-button, 
@@ -59,7 +59,7 @@
             cursor: pointer;
             font-weight: bold;
             transition: all 0.2s ease-in-out; 
-            padding: 10px; /* 인증 버튼에 맞게 기본 패딩 설정 */
+            padding: 10px; 
             
             /* 기본 3D 스타일을 위한 설정 */
             transform: scale(1);
@@ -81,11 +81,11 @@
         .feature-execute-button:active, 
         #logoutBtn:active {
             transform: scale(1); 
-            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2); /* 그림자 줄여 눌린 느낌 */
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2); 
             top: 3px; /* 버튼이 아래로 살짝 내려가는 느낌 */
         }
 
-        /* --- 인증 버튼 그룹 --- */
+        /* --- 인증 버튼 그룹 (로그인/회원가입) --- */
         .auth-buttons {
             display: flex; 
             justify-content: space-between;
@@ -93,9 +93,8 @@
         }
         .auth-buttons button { 
             width: 48%; 
-            /* 3D 그림자 */
             box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2); 
-            top: 0; /* 초기 위치 */
+            top: 0; 
         }
         #signupBtn { 
             background-color: #27ae60; 
@@ -109,31 +108,36 @@
         }
 
         /* --- 기능 버튼 컨테이너 (로그인 후 대시보드) --- */
-        .button-container { margin-top: 30px; display: flex; flex-direction: column; gap: 15px; }
+        .button-container { 
+            margin-top: 30px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+        }
 
-        /* 기능 1 (타이머) - 크기 통일을 위해 display: block 및 padding 재설정 */
+        /* 기능 1 (타이머) - 크기 통일을 위해 display: block 및 padding 명시 */
         .feature-button {
             display: block;
             width: 100%;
-            padding: 15px; /* 기능 버튼 패딩 조정 */
+            padding: 15px; 
             background-color: #f39c12; 
             color: white;
             text-decoration: none;
             font-size: 1.1em;
             box-shadow: 0 5px 0 #e67e22; 
-            top: 0; /* 초기 위치 */
+            top: 0; 
         }
 
-        /* 기능 2 (퀴즈) - 크기 통일을 위해 padding 재설정 */
+        /* 기능 2 (퀴즈) - 크기 통일을 위해 display: block 및 padding 명시 */
         .feature-execute-button {
             display: block;
             width: 100%;
-            padding: 15px; /* 기능 버튼 패딩 조정 */
+            padding: 15px; 
             background-color: #8e44ad; 
             color: white;
             font-size: 1.1em;
             box-shadow: 0 5px 0 #9b59b6; 
-            top: 0; /* 초기 위치 */
+            top: 0; 
         }
         
         /* 로그아웃 버튼 */
@@ -144,14 +148,14 @@
             width: 100%;
             padding: 10px;
             box-shadow: 0 4px 0 #a03126; 
-            top: 0; /* 초기 위치 */
+            top: 0; 
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1 id="mainTitle">로그인이 필요합니다</h1>
+        <h1 id="mainTitle">로그인이 필요합니다</h1> 
 
         <div id="userStatus">인증 상태 확인 중...</div>
 
@@ -205,6 +209,7 @@
         const mainTitle = document.getElementById('mainTitle');
 
         // --- [핵심 함수] 아이디를 Firebase용 가상 이메일로 변환 ---
+        // 이 함수를 통해 이메일 없이도 Firebase 인증을 사용합니다.
         function convertUsernameToEmail(username) {
             const sanitizedUsername = username.toLowerCase().replace(/[^a-z0-9]/g, '_');
             return `${sanitizedUsername}@${PROJECT_ID}.com`;
@@ -216,14 +221,16 @@
         // --- 인증 상태 변경 감지 및 UI 업데이트 ---
         auth.onAuthStateChanged((user) => {
             if (user) {
+                // 로그인됨: 닉네임만 표시 (이메일 숨김)
                 const displayId = user.displayName; 
                 userStatus.textContent = `환영합니다, ${displayId}님!`;
-                mainTitle.textContent = "기능을 선택하세요."; 
+                mainTitle.textContent = "기능을 선택하세요."; // 제목 변경
                 authSection.style.display = 'none';
                 dashboardSection.style.display = 'block';
             } else {
+                // 로그아웃됨
                 userStatus.textContent = '아이디와 비밀번호를 입력해주세요.';
-                mainTitle.textContent = "로그인이 필요합니다"; 
+                mainTitle.textContent = "로그인이 필요합니다"; // 제목 변경
                 authSection.style.display = 'block';
                 dashboardSection.style.display = 'none';
             }
@@ -241,6 +248,7 @@
 
             auth.createUserWithEmailAndPassword(emailToUse, password)
                 .then((userCredential) => {
+                    // 실제 아이디를 displayName에 저장
                     return userCredential.user.updateProfile({ displayName: username });
                 })
                 .then(() => {
