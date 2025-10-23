@@ -3,328 +3,721 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Charger Tomato Penguin - 인증 및 기능 선택</title>
+    <title>순공 시간 타이머 & 랭킹</title>
+    
     <style>
-        /* --- 기본 레이아웃 및 폰트 --- */
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            padding: 20px; 
-            background-color: #f5f7fa; 
-            text-align: center; 
-        }
-        .container { 
-            max-width: 380px; 
-            margin: 80px auto; 
-            background: white; 
-            padding: 35px; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); 
-        }
-         
-        /* --- 인증 섹션 타이틀 --- */
-        h1 { 
-            color: #34495e; 
-            margin-bottom: 30px; 
-            font-size: 1.6em; 
-            font-weight: 700;
-        }
-         
-        /* --- 인증 상태 및 메시지 --- */
-        #userStatus { 
-            font-weight: 600; 
-            margin-bottom: 25px; 
-            padding: 10px; 
-            background: #ecf0f1; 
-            color: #2c3e50;
-            border-radius: 6px; 
-        }
-         
-        /* --- 인증 폼 스타일 (입력창) --- */
-        input[type="text"], input[type="password"] { 
-            width: 100%; 
-            padding: 12px; 
-            margin: 10px 0; 
-            border: 1px solid #ccc; 
-            border-radius: 6px; 
-            box-sizing: border-box; 
-        }
-         
-        /* --- 공통 버튼 스타일 (3D 및 확대/눌림 효과) --- */
-        .auth-buttons button, 
-        .feature-button, 
-        .feature-execute-button, 
-        #logoutBtn {
-            border: none;
-            border-radius: 6px; 
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.2s ease-in-out; 
-             
-            /* 3D 및 애니메이션 기본값 */
-            transform: scale(1);
-            position: relative;
-        }
-         
-        /* 마우스 호버 시 확대 및 그림자 변화 */
-        .auth-buttons button:hover, 
-        .feature-button:hover, 
-        .feature-execute-button:hover, 
-        #logoutBtn:hover {
-            transform: scale(1.03); 
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); 
-        }
-
-        /* 클릭(Active) 시 눌리는 효과 */
-        .auth-buttons button:active, 
-        .feature-button:active, 
-        .feature-execute-button:active, 
-        #logoutBtn:active {
-            transform: scale(1); 
-            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2); 
-            top: 3px; 
-        }
-
-        /* --- 인증 버튼 그룹 (로그인/회원가입) --- */
-        .auth-buttons {
-            display: flex; 
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-        .auth-buttons button { 
-            width: 48%; 
-            padding: 10px;
-            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2); 
-            top: 0; 
-        }
-        #signupBtn { 
-            background-color: #27ae60; 
-            color: white; 
-            box-shadow: 0 4px 0 #208e4d; 
-        }
-        #loginBtn { 
-            background-color: #2980b9; 
-            color: white; 
-            box-shadow: 0 4px 0 #206d9a; 
-        }
-
-        /* --- 기능 버튼 컨테이너 (로그인 후 대시보드) --- */
-        .button-container { 
-            margin-top: 30px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 15px; 
-             
-            /* 버튼 너비 제한 및 중앙 정렬 */
-            max-width: 300px;
-            margin: 30px auto 0 auto;
-        }
-         
-        /* 기능 1 (타이머) 및 기능 2 (퀴즈) - 크기 통일을 위해 flex 사용 */
-        .feature-button, 
-        .feature-execute-button {
-            display: flex; 
-            justify-content: center;
+        /* --- 기본 및 전역 스타일 --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            display: flex;
+            flex-direction: column;
             align-items: center;
-            width: 100%;
-            padding: 15px 10px;
-            min-height: 50px;
-            font-size: 1.1em;
-            text-decoration: none;
-            box-sizing: border-box;
-            top: 0; 
+            min-height: 100vh;
         }
-         
-        .feature-button {
-            background-color: #f39c12; 
+        
+        h1 {
             color: white;
-            box-shadow: 0 5px 0 #e67e22; 
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
-        .feature-execute-button {
-            background-color: #8e44ad; 
-            color: white;
-            box-shadow: 0 5px 0 #9b59b6; 
+        /* --- 주요 컨테이너 레이아웃: 3단 구조 --- */
+        .timer-app-container {
+            display: flex;
+            width: 95%;
+            max-width: 1400px;
+            background-color: #fff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            margin-top: 20px;
+            min-height: 600px;
         }
-         
-        /* 로그아웃 버튼 */
-        #logoutBtn { 
-            background-color: #c0392b; 
-            color: white; 
-            margin-top: 30px; 
+
+        /* --- 기록 바 섹션 (좌측) --- */
+        .record-bar-section {
+            flex: 1;
+            background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 25px;
+            border-right: 2px solid #dee2e6;
+            overflow-y: auto; 
+            max-height: 600px;
+        }
+
+        /* --- 타이머 및 버튼 영역 (중앙) --- */
+        .main-timer-section {
+            flex: 1.2;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-right: 2px solid #dee2e6;
+            background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+        }
+
+        /* --- 랭킹 섹션 (우측) --- */
+        .ranking-section {
+            flex: 1;
+            background: linear-gradient(180deg, #fff3cd 0%, #ffe69c 100%);
+            padding: 25px;
+            overflow-y: auto;
+            max-height: 600px;
+        }
+
+        /* --- 공통 헤더 스타일 --- */
+        .record-header {
+            font-weight: 700;
+            color: #495057;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #495057;
+            font-size: 1.3em;
+            text-align: left;
+        }
+        
+        .ranking-header {
+            color: #f76707;
+            border-bottom: 3px solid #f76707;
+            text-align: left;
+        }
+
+        /* --- 타이머 중앙 섹션 세부 스타일 --- */
+        #total-study-display {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #495057;
+            margin-bottom: 30px;
+            padding: 12px 24px;
+            background: #e7f5ff;
+            border-radius: 12px;
+            border: 2px solid #339af0;
+        }
+
+        #timer-display {
+            font-size: 7em;
+            font-family: 'Courier New', monospace;
+            font-weight: 800;
+            color: #667eea;
+            letter-spacing: 8px;
+            margin: 30px 0;
+            padding: 20px 40px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 20px;
+            box-shadow: 
+                inset 0 4px 8px rgba(0,0,0,0.1),
+                0 8px 16px rgba(102, 126, 234, 0.2);
+            border: 3px solid #667eea;
+        }
+
+        /* --- 기록 항목 스타일 --- */
+        .record-item {
+            margin-bottom: 12px;
+            padding: 12px 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #339af0;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .record-item:hover {
+            background-color: #e7f5ff;
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .record-label {
+            font-weight: 600;
+            color: #495057;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .record-time {
+            color: #339af0;
+            font-family: monospace;
+            font-size: 1.05em;
+            font-weight: 600;
+        }
+
+        /* --- 랭킹 목록 스타일 --- */
+        #ranking-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 1em;
+            color: #333;
+        }
+
+        #ranking-list li {
+            padding: 15px;
+            margin-bottom: 8px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        #ranking-list li:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .rank-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .rank-number {
+            font-size: 1.3em;
+            font-weight: 800;
+            color: #f76707;
+            min-width: 40px;
+            text-align: center;
+            background: linear-gradient(135deg, #ffe69c 0%, #ffd43b 100%);
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+        
+        .rank-name {
+            font-weight: 700;
+            color: #495057;
+            font-size: 1.05em;
+        }
+        
+        .rank-time {
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            color: #339af0;
+            font-size: 1.1em;
+            background: #e7f5ff;
+            padding: 6px 12px;
+            border-radius: 6px;
+        }
+        
+        .current-user-rank {
+            border: 3px solid #fa5252 !important;
+            background: linear-gradient(135deg, #ffe3e3 0%, #ffc9c9 100%) !important;
+            box-shadow: 0 4px 12px rgba(250, 82, 82, 0.3) !important;
+        }
+        
+        /* --- 버튼 공통 스타일 --- */
+        button,
+        .back-to-main-button {
+            padding: 15px 35px;
+            font-size: 1.2em;
+            font-weight: 700;
+            margin: 10px 8px;
+            cursor: pointer;
+            border: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            text-decoration: none;
+            display: inline-block;
+            line-height: normal;
+        }
+        
+        button:hover,
+        .back-to-main-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        button:active,
+        .back-to-main-button:active {
+            transform: translateY(-1px);
+        }
+
+        #start-button {
+            background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);
+            color: white;
+        }
+
+        #pause-resume-button {
+            background: linear-gradient(135deg, #ffd43b 0%, #fab005 100%);
+            color: white;
+        }
+
+        #finish-session-button {
+            background: linear-gradient(135deg, #ff6b6b 0%, #fa5252 100%);
+            color: white;
+        }
+        
+        .back-to-main-button {
+            background: linear-gradient(135deg, #868e96 0%, #495057 100%);
+            color: white;
+            margin-top: 30px;
+        }
+        
+        button:disabled {
+            background: #dee2e6;
+            color: #868e96;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        /* --- 모달 (팝업) 스타일 --- */
+        .modal {
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
             width: 100%;
-            padding: 10px;
-            box-shadow: 0 4px 0 #a03126; 
-            top: 0; 
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6);
+            display: none;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 8% auto;
+            padding: 35px;
+            border-radius: 16px;
+            width: 85%;
+            max-width: 550px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-content h3 {
+            color: #495057;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .close-button {
+            color: #868e96;
+            float: right;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-button:hover {
+            color: #495057;
+        }
+
+        .detail-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            font-size: 1em;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .detail-time {
+            color: #339af0;
+            font-family: monospace;
+            font-weight: 600;
+        }
+        
+        .detail-pause {
+            color: #fa5252;
+            font-family: monospace;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
-
-    <div class="container">
-        <h1 id="mainTitle">로그인이 필요합니다</h1> 
-
-        <div id="userStatus">인증 상태 확인 중...</div>
-
-        <div id="authSection" class="auth-section" style="display: none;">
-            <input type="text" id="usernameInput" placeholder="사용할 아이디"> 
-            <input type="password" id="passwordInput" placeholder="비밀번호">
-            <div class="auth-buttons">
-                <button id="loginBtn">로그인</button>
-                <button id="signupBtn">회원가입</button>
+    
+    <h1>⏱️ 순공 시간 타이머 & 랭킹</h1>
+    
+    <div class="timer-app-container">
+        
+        <div class="record-bar-section">
+            <div class="record-header">📝 내 세션 기록</div>
+            <div id="records-list">
+                <p style="padding: 10px; font-size: 0.9em; color: #868e96;">완료된 세션이 여기에 표시됩니다.</p>
             </div>
         </div>
-
-        <div id="dashboardSection" style="display: none;">
-             
-            <div class="button-container">
-                <a href="timer.html" class="feature-button">기능 1 (순공 시간 타이머)</a>
-                <button onclick="goToFeature2()" class="feature-execute-button">기능 2 (History Quiz) 실행</button>
+        
+        <div class="main-timer-section">
+            <div id="total-study-display">총 공부 시간: 00:00:00</div>
+            
+            <div id="timer-display">00:00:00.00</div>
+            
+            <div id="timer-controls">
+                <button id="start-button">시작</button>
+                
+                <div id="running-controls" style="display: none;">
+                    <button id="pause-resume-button">일시 정지</button>
+                    <button id="finish-session-button">세션 종료</button>
+                </div>
             </div>
-             
-            <button id="logoutBtn">로그아웃</button>
+            
+            <a href="index.html" class="back-to-main-button">메인으로</a>
+        </div>
+
+        <div class="ranking-section">
+            <div class="record-header ranking-header">🏆 총 공부 시간 랭킹</div>
+            <ul id="ranking-list">
+                <li>랭킹 정보 로딩 중...</li>
+            </ul>
+        </div>
+
+    </div>
+    
+    <div id="detail-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3>📊 세션 상세 기록</h3>
+            <div id="modal-details"></div>
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-     
     <script>
-        // --- Firebase 설정 ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyB_nt4nzPfp-trlT8QHNFPFpd-oKqfyWGo",
-            authDomain: "penguineatpenguin.firebaseapp.com",
-            projectId: "penguineatpenguin",
-            storageBucket: "penguineatpenguin.firebasestorage.app",
-            messagingSenderId: "757747390049",
-            appId: "1:757747390049:web:72bcdc12d5eb3bc1b97c20",
-            measurementId: "G-XCT650Z39X"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const PROJECT_ID = firebaseConfig.projectId; 
+        // --- Local Storage Key 설정 ---
+        const STORAGE_KEY_USERS = 'allUsersData_v2';
         const STORAGE_KEY_USERNAME = 'currentLoggedInUsername';
+        
+        // --- 상태 관리 변수 ---
+        let usersData = {};
+        let currentUserID = null;
+        
+        let startTime = 0;
+        let currentInterval = null;
+        let currentSectionTime = 0;
+        let currentSessionStudyTime = 0;
+        let isRunning = false;
+        let isPaused = false;
+        let sessionStartTime = null;
+        let sessionStartClock = null;
+        let currentSessionDetails = [];
 
-        // --- DOM 요소 ---
-        const usernameInput = document.getElementById('usernameInput'); 
-        const passwordInput = document.getElementById('passwordInput');
-        const signupBtn = document.getElementById('signupBtn');
-        const loginBtn = document.getElementById('loginBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const userStatus = document.getElementById('userStatus');
-        const authSection = document.getElementById('authSection');
-        const dashboardSection = document.getElementById('dashboardSection');
-        const mainTitle = document.getElementById('mainTitle');
+        // DOM 요소 가져오기
+        const timerDisplay = document.getElementById('timer-display');
+        const totalStudyDisplay = document.getElementById('total-study-display');
+        const startButton = document.getElementById('start-button');
+        const pauseResumeButton = document.getElementById('pause-resume-button');
+        const finishButton = document.getElementById('finish-session-button');
+        const recordsList = document.getElementById('records-list');
+        const runningControls = document.getElementById('running-controls');
+        const rankingList = document.getElementById('ranking-list');
+        
+        // Modal DOM
+        const modal = document.getElementById('detail-modal');
+        const modalDetails = document.getElementById('modal-details');
+        const closeButton = document.querySelector('.close-button');
 
-        // --- 아이디를 Firebase용 가상 이메일로 변환 ---
-        function convertUsernameToEmail(username) {
-            const sanitizedUsername = username.toLowerCase().replace(/[^a-z0-9]/g, '_');
-            return `${sanitizedUsername}@${PROJECT_ID}.com`;
+        // ==========================================================
+        // ID 로드 및 Local Storage 관리
+        // ==========================================================
+        
+        function initializeUserID() {
+            const loggedInUsername = localStorage.getItem(STORAGE_KEY_USERNAME);
+            
+            if (!loggedInUsername) {
+                alert("로그인이 필요합니다. 메인 페이지로 이동합니다.");
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            currentUserID = loggedInUsername;
+        }
+
+        function loadData() {
+            const storedUsers = localStorage.getItem(STORAGE_KEY_USERS);
+            usersData = storedUsers ? JSON.parse(storedUsers) : {};
+
+            if (!usersData[currentUserID]) {
+                usersData[currentUserID] = { totalTime: 0, sessions: [] };
+            }
+
+            updateDisplay();
+            renderRecords();
+            renderRanking();
+        }
+
+        function saveAllData() {
+            localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(usersData));
+            updateDisplay();
+            renderRanking();
+        }
+
+        // ==========================================================
+        // 랭킹 기능 함수
+        // ==========================================================
+
+        function renderRanking() {
+            const allUsers = Object.entries(usersData);
+            
+            allUsers.sort(([, a], [, b]) => b.totalTime - a.totalTime);
+            
+            rankingList.innerHTML = '';
+
+            if (allUsers.length === 0) {
+                rankingList.innerHTML = '<li>데이터가 없습니다.</li>';
+                return;
+            }
+
+            allUsers.forEach(([id, data], index) => {
+                const rank = index + 1;
+                const time = formatSimpleTime(data.totalTime);
+                const isCurrentUser = id === currentUserID;
+                const listItemClass = isCurrentUser ? 'current-user-rank' : '';
+
+                rankingList.innerHTML += `
+                    <li class="${listItemClass}">
+                        <div class="rank-left">
+                            <span class="rank-number">${rank}위</span>
+                            <span class="rank-name">${isCurrentUser ? '🔥 나' : id}</span>
+                        </div>
+                        <span class="rank-time">${time}</span>
+                    </li>
+                `;
+            });
+        }
+
+        // ==========================================================
+        // 시간 포맷팅 및 디스플레이 함수
+        // ==========================================================
+        
+        function formatTime(ms) {
+            const totalSeconds = Math.floor(ms / 1000);
+            const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+            const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+            const seconds = String(totalSeconds % 60).padStart(2, '0');
+            const centiseconds = String(Math.floor((ms % 1000) / 10)).padStart(2, '0');
+            return `${hours}:${minutes}:${seconds}.${centiseconds}`;
         }
         
-        function goToFeature2() {
-            window.location.href = 'history quiz.html'; 
+        function formatSimpleTime(ms) {
+            const totalSeconds = Math.floor(ms / 1000);
+            const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+            const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+            const seconds = String(totalSeconds % 60).padStart(2, '0');
+            return `${hours}:${minutes}:${seconds}`;
+        }
+
+        function formatClockTime(date) {
+            return date.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true });
+        }
+
+        function updateDisplay() {
+            const userData = usersData[currentUserID] || { totalTime: 0 };
+            totalStudyDisplay.textContent = `총 공부 시간: ${formatSimpleTime(userData.totalTime)}`;
+        }
+
+        function renderRecords() {
+            recordsList.innerHTML = '';
+            
+            const sessions = usersData[currentUserID].sessions;
+            
+            if (sessions.length === 0) {
+                recordsList.innerHTML = '<p style="padding: 10px; font-size: 0.9em; color: #868e96;">완료된 세션이 여기에 표시됩니다.</p>';
+                return;
+            }
+
+            sessions.slice().reverse().forEach((sessionRecord, index) => {
+                const item = document.createElement('div');
+                item.className = 'record-item';
+                const originalIndex = sessions.length - 1 - index;
+                item.dataset.index = originalIndex;
+                item.addEventListener('click', () => showDetailModal(originalIndex));
+
+                const startClockFormatted = formatClockTime(new Date(sessionRecord.startClock));
+                const endClockFormatted = formatClockTime(new Date(sessionRecord.endClock));
+
+                item.innerHTML = `
+                    <span class="record-label">${startClockFormatted} ~ ${endClockFormatted}</span>
+                    <span class="record-time">순공 시간: ${formatSimpleTime(sessionRecord.studyTime)}</span>
+                `;
+                recordsList.appendChild(item);
+            });
+            recordsList.scrollTop = recordsList.scrollHeight;
+        }
+
+        // ==========================================================
+        // 타이머 로직 함수
+        // ==========================================================
+        
+        function addSessionDetail(type, reason = '') {
+            currentSessionDetails.push({
+                type: type,
+                time: new Date(),
+                reason: reason
+            });
+        }
+
+        function updateTimer() {
+            const now = Date.now();
+            const elapsedSinceStart = now - startTime;
+            
+            currentSectionTime += elapsedSinceStart;
+            usersData[currentUserID].totalTime += elapsedSinceStart;
+            currentSessionStudyTime += elapsedSinceStart;
+            
+            startTime = now;
+            
+            timerDisplay.textContent = formatTime(currentSectionTime);
+            updateDisplay();
+            
+            if (Math.floor(currentSectionTime / 1000) !== Math.floor((currentSectionTime - elapsedSinceStart) / 1000)) {
+                saveAllData();
+            }
+        }
+
+        function startSession() {
+            if (isRunning || sessionStartTime) return;
+
+            sessionStartTime = Date.now();
+            sessionStartClock = new Date();
+            addSessionDetail('start');
+            
+            isRunning = true;
+            isPaused = false;
+            
+            startButton.style.display = 'none';
+            runningControls.style.display = 'block';
+            pauseResumeButton.textContent = '일시 정지';
+
+            currentSectionTime = 0;
+            currentSessionStudyTime = 0;
+            currentSessionDetails = [];
+            
+            startTime = Date.now();
+            currentInterval = setInterval(updateTimer, 10);
         }
         
-        // --- 로그인 성공 후 아이디를 LocalStorage에 저장 ---
-        function handleLoginSuccess(username) {
-            localStorage.setItem(STORAGE_KEY_USERNAME, username);
-            alert("로그인 성공!");
+        function togglePauseResume(reason = '') {
+            if (!sessionStartTime) return;
+            
+            if (isRunning) {
+                clearInterval(currentInterval);
+                isRunning = false;
+                isPaused = true;
+                
+                pauseResumeButton.textContent = '다시 시작';
+                addSessionDetail('pause', reason);
+                
+            } else if (isPaused) {
+                isRunning = true;
+                isPaused = false;
+                
+                pauseResumeButton.textContent = '일시 정지';
+                addSessionDetail('resume', reason);
+
+                startTime = Date.now();
+                currentInterval = setInterval(updateTimer, 10);
+            }
         }
+        
+        function endSession() {
+            if (!sessionStartTime) {
+                alert("시작된 세션이 없습니다.");
+                return;
+            }
+            
+            if (isRunning) {
+                clearInterval(currentInterval);
+                isRunning = false;
+            }
+            addSessionDetail('end');
+            
+            const sessionEndClock = new Date();
 
-        // --- 인증 상태 변경 감지 및 UI 업데이트 ---
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                const displayId = user.displayName; 
-                userStatus.textContent = `환영합니다, ${displayId}님!`;
-                mainTitle.textContent = "기능을 선택하세요."; 
-                authSection.style.display = 'none';
-                dashboardSection.style.display = 'block';
+            const sessionRecord = {
+                startClock: sessionStartClock.toISOString(),
+                endClock: sessionEndClock.toISOString(),
+                studyTime: currentSessionStudyTime,
+                details: currentSessionDetails.map(d => ({ ...d, time: d.time.toISOString() }))
+            };
+            
+            usersData[currentUserID].sessions.push(sessionRecord);
+            saveAllData();
+            
+            sessionStartTime = null;
+            sessionStartClock = null;
+            currentSessionStudyTime = 0;
+            currentSectionTime = 0;
+            isPaused = false;
+
+            startButton.style.display = 'block';
+            runningControls.style.display = 'none';
+            timerDisplay.textContent = '00:00:00.00';
+            
+            renderRecords();
+        }
+        
+        function handleVisibilityChange() {
+            if (!sessionStartTime) return;
+            
+            if (document.hidden) {
+                if (isRunning) {
+                    togglePauseResume('화면 전환');
+                }
+            }
+        }
+        
+        function showDetailModal(index) {
+            const sessions = usersData[currentUserID].sessions;
+            const sessionRecord = sessions[index];
+            if (!sessionRecord) return;
+            
+            modalDetails.innerHTML = '';
+            
+            sessionRecord.details.forEach(detail => {
+                let label = '';
+                let timeClass = 'detail-time';
+                const detailTime = new Date(detail.time);
                 
-                // 로그인 상태 유지 시에도 LocalStorage에 아이디 저장
-                localStorage.setItem(STORAGE_KEY_USERNAME, displayId);
+                switch (detail.type) {
+                    case 'start': label = '⏰ 타이머 시작'; break;
+                    case 'pause':
+                        label = '⏸️ 일시 정지';
+                        timeClass = 'detail-pause';
+                        if (detail.reason) label += ` (${detail.reason})`;
+                        break;
+                    case 'resume': label = '▶️ 다시 시작'; break;
+                    case 'end': label = '✅ 타이머 종료'; break;
+                    default: label = '📝 기록';
+                }
 
-            } else {
-                userStatus.textContent = '아이디와 비밀번호를 입력해주세요.';
-                mainTitle.textContent = "로그인이 필요합니다"; 
-                authSection.style.display = 'block';
-                dashboardSection.style.display = 'none';
-                
-                // 로그아웃 시 LocalStorage 아이디 삭제
-                localStorage.removeItem(STORAGE_KEY_USERNAME);
-            }
-        });
+                modalDetails.innerHTML += `
+                    <div class="detail-item">
+                        <span class="detail-label">${label}</span>
+                        <span class="${timeClass}">${formatClockTime(detailTime)}</span>
+                    </div>
+                `;
+            });
 
-        // --- 회원가입 핸들러 ---
-        signupBtn.addEventListener('click', () => {
-            const username = usernameInput.value.trim();
-            const password = passwordInput.value;
-             
-            if (!username) { 
-                alert("사용할 아이디를 입력해주세요."); 
-                return; 
-            }
-            if (password.length < 6) { 
-                alert("비밀번호는 6자리 이상이어야 합니다."); 
-                return; 
-            }
-             
-            const emailToUse = convertUsernameToEmail(username);
+            modal.style.display = 'block';
+        }
+        
+        // Modal Event Listeners
+        closeButton.onclick = function() { modal.style.display = 'none'; }
+        window.onclick = function(event) { if (event.target == modal) { modal.style.display = 'none'; } }
 
-            auth.createUserWithEmailAndPassword(emailToUse, password)
-                .then((userCredential) => {
-                    return userCredential.user.updateProfile({ displayName: username });
-                })
-                .then(() => {
-                    handleLoginSuccess(username);
-                })
-                .catch((error) => {
-                    console.error("회원가입 오류:", error.code, error.message);
-                    if (error.code === 'auth/email-already-in-use') {
-                        alert(`회원가입 실패: 이미 사용 중인 아이디입니다.`);
-                    } else {
-                        alert(`회원가입 실패: ${error.message}`);
-                    }
-                });
-        });
-
-        // --- 로그인 핸들러 ---
-        loginBtn.addEventListener('click', () => {
-            const username = usernameInput.value.trim();
-            const password = passwordInput.value;
-
-            if (!username || !password) { 
-                alert("아이디와 비밀번호를 모두 입력해주세요."); 
-                return; 
-            }
-
-            const emailToUse = convertUsernameToEmail(username); 
-
-            auth.signInWithEmailAndPassword(emailToUse, password)
-                .then((userCredential) => {
-                    const username = userCredential.user.displayName;
-                    handleLoginSuccess(username); 
-                })
-                .catch((error) => {
-                    console.error("로그인 오류:", error.code, error.message);
-                    if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-email') {
-                        alert(`로그인 실패: 아이디 또는 비밀번호가 올바르지 않습니다.`);
-                    } else {
-                        alert(`로그인 실패: ${error.message}`);
-                    }
-                });
-        });
-
-        // --- 로그아웃 핸들러 ---
-        logoutBtn.addEventListener('click', () => {
-            auth.signOut()
-                .then(() => { 
-                    localStorage.removeItem(STORAGE_KEY_USERNAME);
-                    alert("로그아웃되었습니다."); 
-                })
-                .catch((error) => { 
-                    console.error("로그아웃 오류:", error); 
-                });
-        });
+        // --- 이벤트 리스너 등록 ---
+        startButton.addEventListener('click', startSession);
+        pauseResumeButton.addEventListener('click', () => { togglePauseResume('사용자'); });
+        finishButton.addEventListener('click', endSession);
+        
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        
+        // --- 초기 로드 ---
+        initializeUserID();
+        loadData();
     </script>
 </body>
 </html>
