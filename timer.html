@@ -3,124 +3,222 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>타이머 기능</title>
+    <title>순공 시간 타이머</title>
     
     <style>
-        /* 기본 레이아웃 스타일 */
+        /* --- 기본 및 전역 스타일 --- */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             text-align: center;
-            padding: 40px 20px;
-            background-color: #f4f7f6; /* 부드러운 배경색 */
+            padding: 20px;
+            background-color: #f4f7f6; 
             color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         
         h1 {
             color: #2c3e50;
-            margin-bottom: 40px;
+            margin-bottom: 20px;
         }
 
-        /* 타이머 표시 영역 */
+        /* --- 주요 컨테이너 레이아웃 --- */
+        .timer-app-container {
+            display: flex;
+            width: 90%;
+            max-width: 1000px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        /* --- 타이머 및 버튼 영역 --- */
+        .main-timer-section {
+            flex: 2; /* 왼쪽 기록 바보다 넓게 */
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* 총 공부 시간 표시 */
+        #total-study-display {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #3498db;
+            margin-bottom: 20px;
+        }
+
+        /* 현재 타이머 표시 */
         #timer-display {
-            font-size: 5em;
-            margin: 50px auto;
+            font-size: 6em; 
             font-family: monospace; 
             color: #2c3e50;
-            letter-spacing: 3px; 
-            background-color: #ffffff; 
-            padding: 20px 40px;
-            border-radius: 12px;
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-            display: inline-block;
-            min-width: 300px; /* 최소 너비 설정 */
+            letter-spacing: 5px; 
+            margin: 20px 0;
+            padding: 10px 0;
         }
-
-        /* 버튼 기본 스타일 */
+        
+        /* 버튼 스타일 */
         button {
-            padding: 12px 25px;
-            font-size: 1.1em;
+            padding: 12px 30px;
+            font-size: 1.2em;
             font-weight: 600;
-            margin: 10px;
+            margin: 10px 8px;
             cursor: pointer;
             border: none;
             border-radius: 8px;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        /* 시작 버튼 */
         #start-button {
-            background-color: #2ecc71; /* 에메랄드 그린 */
-            color: white;
+            background-color: #2ecc71; color: white;
         }
-        #start-button:hover:not(:disabled) {
-            background-color: #27ae60;
-            transform: translateY(-2px);
-        }
+        #start-button:hover:not(:disabled) { background-color: #27ae60; }
 
-        /* 정지 버튼 */
         #stop-button {
-            background-color: #e74c3c; /* 붉은색 */
-            color: white;
+            background-color: #f39c12; color: white;
         }
-        #stop-button:hover:not(:disabled) {
-            background-color: #c0392b;
-            transform: translateY(-2px);
-        }
+        #stop-button:hover:not(:disabled) { background-color: #e67e22; }
 
-        /* 비활성화된 버튼 */
+        #finish-button {
+            background-color: #e74c3c; color: white;
+        }
+        #finish-button:hover:not(:disabled) { background-color: #c0392b; }
+        
         button:disabled {
-            background-color: #bdc3c7;
-            color: #7f8c8d;
-            cursor: not-allowed;
+            background-color: #bdc3c7; color: #7f8c8d; cursor: not-allowed;
             box-shadow: none;
-            transform: none;
         }
 
-        /* 메인으로 돌아가기 링크 */
+        /* --- 기록 바 섹션 (좌측) --- */
+        .record-bar-section {
+            flex: 1; /* 메인 영역의 절반 크기 */
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-left: 1px solid #ddd;
+            overflow-y: auto; /* 내용이 많아지면 스크롤 가능 */
+            max-height: 500px; /* 최대 높이 설정 */
+        }
+
+        .record-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            font-size: 0.9em;
+            text-align: left;
+        }
+
+        .record-item:last-child {
+            border-bottom: none;
+        }
+        
+        .record-label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .record-time {
+            color: #3498db;
+            font-family: monospace;
+        }
+        .record-pause {
+            color: #e74c3c;
+            font-weight: 500;
+        }
+        
+        .record-header {
+            font-weight: 700;
+            color: #34495e;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #34495e;
+        }
+        
         .back-link {
-            margin-top: 50px;
+            margin-top: 30px;
         }
         .back-link a {
-            color: #3498db;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 1.1em;
+            color: #3498db; text-decoration: none; font-weight: 500;
         }
-        .back-link a:hover {
-            text-decoration: underline;
-        }
+        .back-link a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
     
-    <h1>타이머</h1>
+    <h1>✏️ 순공 시간 측정기</h1>
     
-    <div id="timer-display">00:00:00</div>
-    
-    <div>
-        <button id="start-button">시작</button>
-        <button id="stop-button" disabled>정지</button>
+    <div class="timer-app-container">
+        
+        <div class="record-bar-section">
+            <div class="record-header">공부 기록</div>
+            <div id="records-list">
+                </div>
+        </div>
+        
+        <div class="main-timer-section">
+            <div id="total-study-display">총 공부 시간: 00:00:00</div>
+            
+            <div id="timer-display">00:00:00.00</div>
+            
+            <div id="timer-controls">
+                <button id="start-button">시작</button>
+                
+                <div id="running-controls" style="display: none;">
+                    <button id="stop-button">정지</button>
+                    <button id="finish-button">끝내기</button>
+                </div>
+            </div>
+        </div>
+
     </div>
     
     <div class="back-link">
         <a href="index.html">메인 화면으로 돌아가기</a>
     </div>
 
+### 2. JavaScript 로직 (`<script>`)
+
+```javascript
     <script>
-        // 타이머 상태 관리 변수
-        let startTime = 0;      // setInterval이 시작된 시각
-        let elapsedTime = 0;    // 누적된 경과 시간 (밀리초)
-        let timerInterval = null; // setInterval ID
-        let isRunning = false;  // 타이머가 명시적으로 실행 중인 상태인지
+        // --- 상태 관리 변수 ---
+        let startTime = 0;          // 현재 구간의 시작 시각
+        let currentInterval = null; // setInterval ID
+        let currentSectionTime = 0; // 현재 구간의 누적 시간 (밀리초)
+        let totalElapsedTime = 0;   // 총 공부 시간 (밀리초)
+        let totalPauseTime = 0;     // 총 정지/비활성화 시간 (밀리초)
+        let isRunning = false;      // 타이머가 명시적으로 실행 중인 상태인지
+        let isPaused = false;       // 타이머가 명시적으로 정지된 상태인지
+        let sessionStartTime = null; // 전체 세션 시작 시간 (기록용)
 
         // DOM 요소 가져오기
         const timerDisplay = document.getElementById('timer-display');
+        const totalStudyDisplay = document.getElementById('total-study-display');
         const startButton = document.getElementById('start-button');
         const stopButton = document.getElementById('stop-button');
+        const finishButton = document.getElementById('finish-button');
+        const recordsList = document.getElementById('records-list');
+        const runningControls = document.getElementById('running-controls');
 
-        // 시간을 시:분:초 형식으로 포맷팅하는 함수
+        // --- 시간 포맷팅 함수 ---
+        // 시:분:초.밀리초(0.01초) 형식
         function formatTime(ms) {
+            const totalSeconds = Math.floor(ms / 1000);
+            const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+            const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+            const seconds = String(totalSeconds % 60).padStart(2, '0');
+            const centiseconds = String(Math.floor((ms % 1000) / 10)).padStart(2, '0'); // 0.01초 단위
+            return `${hours}:${minutes}:${seconds}.${centiseconds}`;
+        }
+        
+        // 시:분:초 형식 (기록용)
+        function formatSimpleTime(ms) {
             const totalSeconds = Math.floor(ms / 1000);
             const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
             const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
@@ -128,70 +226,130 @@
             return `${hours}:${minutes}:${seconds}`;
         }
 
-        // 타이머 시간 업데이트 함수 (1초마다 호출)
-        function updateTimer() {
-            const currentTime = Date.now();
-            elapsedTime += currentTime - startTime;
-            startTime = currentTime; // 다음 인터벌을 위해 시작 시간을 갱신
+        // --- 기록 함수 ---
+        function recordTime(label, timeMs, type = 'time') {
+            const item = document.createElement('div');
+            item.className = 'record-item';
             
-            timerDisplay.textContent = formatTime(elapsedTime);
+            const timeFormatted = type === 'pause' ? formatSimpleTime(timeMs) : formatSimpleTime(timeMs);
+            const timeClass = type === 'pause' ? 'record-pause' : 'record-time';
+            
+            item.innerHTML = `
+                <span class="record-label">${label}</span>
+                <span class="${timeClass}">${timeFormatted}</span>
+            `;
+            recordsList.appendChild(item);
+            recordsList.scrollTop = recordsList.scrollHeight; // 스크롤 하단으로 이동
         }
 
-        // 타이머 시작 함수
+        // --- 타이머 업데이트 함수 ---
+        function updateTimer() {
+            const now = Date.now();
+            const elapsedSinceStart = now - startTime;
+            
+            // 현재 구간 시간과 총 공부 시간을 업데이트
+            currentSectionTime += elapsedSinceStart;
+            totalElapsedTime += elapsedSinceStart;
+            
+            startTime = now; // 시작 시간 갱신
+            
+            timerDisplay.textContent = formatTime(currentSectionTime);
+            totalStudyDisplay.textContent = `총 공부 시간: ${formatSimpleTime(totalElapsedTime)}`;
+        }
+
+        // --- 버튼 로직 ---
         function startTimer() {
             if (isRunning) return;
 
+            // 전체 세션 시작 시간 기록
+            if (!sessionStartTime) {
+                sessionStartTime = Date.now();
+                recordTime('세션 시작', sessionStartTime - sessionStartTime, 'start');
+            }
+            
             isRunning = true;
-            startButton.disabled = true;
-            stopButton.disabled = false;
+            isPaused = false;
             
+            // 버튼 전환: 시작 버튼 숨기고, 정지/끝내기 표시
+            startButton.style.display = 'none';
+            runningControls.style.display = 'block';
+
             startTime = Date.now(); 
-            timerInterval = setInterval(updateTimer, 1000); 
+            // 0.01초 단위 업데이트를 위해 10ms마다 호출
+            currentInterval = setInterval(updateTimer, 10); 
         }
 
-        // 타이머 정지 함수 (manualStop이 true면 수동 정지, false면 페이지 이탈 정지)
-        function stopTimer(manualStop = false) {
+        function stopTimer(isFinish = false) {
             if (!isRunning) return;
-
-            clearInterval(timerInterval);
             
-            // 수동 정지일 경우에만 상태와 버튼을 리셋
-            if (manualStop) {
-                isRunning = false;
-                startButton.disabled = false;
+            isRunning = false;
+            isPaused = true;
+            clearInterval(currentInterval);
+            
+            const pauseTime = Date.now();
+            
+            // 현재 구간 기록 (공부 시간)
+            recordTime('공부 구간', currentSectionTime);
+            currentSectionTime = 0; // 구간 시간 초기화
+
+            if (isFinish) {
+                recordTime('세션 종료', pauseTime - sessionStartTime);
+                sessionStartTime = null;
+                isPaused = false; // 세션이 완전히 끝났으므로 정지 상태도 해제
+                
+                // 모든 버튼 비활성화 (새 세션 시작을 위해 페이지 새로고침 유도)
+                startButton.disabled = true;
                 stopButton.disabled = true;
-            }
-            // 수동 정지가 아니면 (페이지 이탈 시) isRunning 상태를 유지하여 복귀 시 재시작 준비
-        }
-
-        // ------------------------------------------------------------------
-        // 핵심 로직: 페이지 가시성 변경 시 타이머 제어 (다른 창으로 나가면 멈춤)
-        // ------------------------------------------------------------------
-        function handleVisibilityChange() {
-            // document.hidden이 true: 페이지가 비활성화(다른 탭, 최소화)됨
-            if (document.hidden) {
-                if (isRunning) {
-                    stopTimer(false); // 실행 중이었다면 멈춤
-                }
-            } 
-            // document.hidden이 false: 페이지가 다시 활성화됨
-            else {
-                if (isRunning) {
-                    startTime = Date.now(); // 멈춰있던 시간만큼은 건너뛰고
-                    timerInterval = setInterval(updateTimer, 1000); // 다시 시작
-                }
+                finishButton.disabled = true;
+                alert(`공부 끝! 총 순공 시간: ${formatSimpleTime(totalElapsedTime)}`);
+                
+            } else {
+                // 정지 상태로 전환 (정지/끝내기 버튼은 계속 표시)
             }
         }
-
-        // ------------------------------------------------------------------
-        // 이벤트 리스너 등록
-        // ------------------------------------------------------------------
         
-        startButton.addEventListener('click', startTimer);
-        // 정지 버튼 클릭 시는 수동 정지(true)로 호출하여 isRunning 상태를 해제합니다.
-        stopButton.addEventListener('click', () => stopTimer(true)); 
+        // --- 페이지 가시성 제어 (다른 창으로 나가면 멈춤) ---
+        let pageHiddenTime = 0; // 페이지가 숨겨진 시각
+        
+        function handleVisibilityChange() {
+            if (!isRunning && !isPaused) return; // 시작되지 않았으면 아무것도 하지 않음
 
-        // 페이지 가시성 변경 이벤트 리스너 등록
+            if (document.hidden) {
+                // 탭 비활성화/최소화 시
+                if (isRunning) {
+                    stopTimer(false); // 실행 중인 상태만 멈춤 (isPaused는 true가 됨)
+                    pageHiddenTime = Date.now();
+                }
+            } else {
+                // 탭 재활성화 시
+                if (isPaused) {
+                    // 비활성화 상태에서 멈췄다가 돌아온 경우에만 재시작
+                    
+                    const now = Date.now();
+                    const pauseDuration = now - pageHiddenTime;
+                    totalPauseTime += pauseDuration;
+                    
+                    // 정지 시간 기록 (화면 전환 정지 시간)
+                    recordTime('정지 시간', pauseDuration, 'pause'); 
+                    
+                    startTimer(); // 타이머 재시작
+                    isPaused = true; // 재시작 후에도 isPaused 상태는 유지 (정지 버튼 클릭 상황 대비)
+                }
+            }
+        }
+
+        // --- 이벤트 리스너 등록 ---
+        startButton.addEventListener('click', startTimer);
+        stopButton.addEventListener('click', () => {
+            stopTimer(false); // 정지 버튼
+            
+            // 정지 버튼을 누르면, 다시 시작할 수 있도록 시작 버튼 활성화
+            startButton.style.display = 'block';
+            runningControls.style.display = 'none';
+        });
+        finishButton.addEventListener('click', () => stopTimer(true)); // 끝내기 버튼
+        
+        // 페이지 가시성 이벤트 리스너 등록
         document.addEventListener('visibilitychange', handleVisibilityChange);
     </script>
 </body>
