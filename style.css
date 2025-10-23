@@ -1,218 +1,44 @@
-/* -------------------- 1. 기본 및 공통 스타일 -------------------- */
+/* 기본 다크 모드 스타일 및 레이아웃 */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* 폰트 변경 */
-    margin: 0;
-    padding: 0;
-    background-color: #e9ecef; /* 배경색을 밝은 회색으로 변경 */
-    color: #343a40; /* 기본 텍스트 색상 */
-}
-
-h1 {
-    color: #007bff; /* 메인 제목 색상 */
-    text-align: center;
-    padding: 20px 0;
-    margin: 0;
-    background-color: #ffffff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-h2 {
-    color: #495057;
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 1.5em;
-    border-bottom: 2px solid #f8f9fa;
-    padding-bottom: 10px;
-}
-
-.screen {
-    max-width: 720px; /* 화면 너비 확대 */
-    margin: 30px auto;
-    background-color: #ffffff;
-    padding: 30px;
-    border-radius: 12px; /* 둥근 모서리 */
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* 그림자 강화 */
-    min-height: 450px;
-    box-sizing: border-box;
-}
-
-.hidden {
-    display: none !important;
-}
-
-/* 돌아가기 버튼 */
-.back-to-main-btn {
-    padding: 8px 15px;
-    margin-bottom: 20px;
-    background: #6c757d;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.9em;
-    transition: background-color 0.2s;
-}
-.back-to-main-btn:hover {
-    background: #5a6268;
-}
-
-/* -------------------- 2. 메인 화면 스타일 -------------------- */
-#main-screen {
+    font-family: sans-serif;
+    background-color: #1a202c; /* Dark mode background */
+    color: #e2e8f0; /* Light text */
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
-    text-align: center;
-    min-height: 60vh;
-}
-#main-screen button {
-    padding: 18px 35px;
-    margin: 15px;
-    font-size: 1.2em;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    border-radius: 8px;
-    transition: all 0.2s ease-in-out;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-#go-to-chat-btn {
-    background-color: #007bff;
-    color: white;
-}
-#go-to-timer-btn {
-    background-color: #28a745;
-    color: white;
-}
-#main-screen button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-/* -------------------- 3. 채팅 화면 스타일 -------------------- */
-#nickname-area {
-    text-align: center;
-    padding: 20px;
-    margin-bottom: 20px;
-    border: 1px solid #f8f9fa;
-    border-radius: 8px;
-}
-#nickname-input-form input {
-    padding: 12px;
-    width: 60%;
-    max-width: 250px;
-    margin-right: 10px;
-    border-radius: 6px;
-    border: 1px solid #ced4da;
-    box-sizing: border-box;
-}
-#nickname-input-form button {
-    padding: 12px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-#nickname-input-form button:hover {
-    background-color: #0056b3;
-}
-
-/* 메시지 표시 영역 */
-#messages {
-    height: 350px; /* 높이 증가 */
-    overflow-y: auto; 
-    border: 1px solid #dee2e6;
-    padding: 15px;
-    margin-bottom: 15px;
-    background-color: #f8f9fa;
-    border-radius: 6px;
-}
-#messages p {
-    margin: 8px 0;
-    line-height: 1.6;
-}
-.message-nickname {
-    font-weight: 700; /* 굵기 증가 */
-    color: #495057;
-    margin-right: 8px;
-}
-
-/* 입력 폼 및 초기화 버튼 스타일 */
-#controls {
-    display: flex;
-    gap: 10px;
     align-items: center;
+    min-height: 100vh;
 }
-#message-form {
-    display: flex;
-    flex-grow: 1;
+.container {
+    width: 100%;
+    max-width: 600px;
+    padding: 2rem;
+    background-color: #2d3748; /* Card background */
+    border-radius: 1rem;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
-#message-input {
-    flex-grow: 1;
-    padding: 12px;
-    border-radius: 6px 0 0 6px;
-    border: 1px solid #007bff;
-    border-right: none;
-    font-size: 16px;
-}
-#message-form button {
-    padding: 12px 18px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 0 6px 6px 0;
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
     cursor: pointer;
     transition: background-color 0.2s;
+    font-weight: bold;
 }
-#message-form button:hover {
-    background-color: #0056b3;
-}
-#clear-messages-btn {
-    padding: 12px 18px;
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-#clear-messages-btn:hover {
-    background-color: #c82333;
-}
+/* 버튼 색상 정의 (Tailwind 클래스와 동일하게 맞춤) */
+.btn-primary { background-color: #4299e1; color: #fff; }
+.btn-primary:hover { background-color: #3182ce; }
+.btn-secondary { background-color: #4a5568; color: #fff; }
+.btn-secondary:hover { background-color: #636b77; }
+.btn-green { background-color: #10B981; color: #fff; }
+.btn-green:hover { background-color: #059669; }
+.btn-red { background-color: #EF4444; color: #fff; }
+.btn-red:hover { background-color: #DC2626; }
 
-/* -------------------- 4. 타이머 화면 스타일 -------------------- */
-#timer-screen {
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-#timer-screen p {
-    color: #6c757d;
-    font-size: 1.1em;
-}
-#timer-display {
-    font-size: 5em; /* 크기 확대 */
-    margin: 40px 0;
-    font-weight: 700;
-    color: #28a745;
-    background-color: #e6f7e9;
-    padding: 20px 40px;
-    border-radius: 10px;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
-    width: fit-content;
-}
-#timer-status {
-    font-size: 1.3em;
-    font-weight: 600;
-    padding: 10px;
-    border-radius: 5px;
-}
-#timer-status span[style*="green"] {
-    color: #28a745 !important;
-}
-#timer-status span[style*="red"] {
-    color: #dc3545 !important;
+/* 채팅 입력창 스타일 */
+.input-box {
+    background-color: #4a5568;
+    border: 1px solid #4a5568;
+    color: #e2e8f0;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    width: 100%;
 }
