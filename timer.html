@@ -296,11 +296,11 @@
     <script>
         // --- Local Storage Key 설정 ---
         const STORAGE_KEY_USERS = 'allUsersData_v2'; // 버전 업그레이드 키
-        const STORAGE_KEY_CURRENT_USER_ID = 'currentUserID_v2';
+        const STORAGE_KEY_USERNAME = 'currentLoggedInUsername'; // index.html과 동일한 키
         
         // --- 상태 관리 변수 ---
         let usersData = {};             // 모든 사용자 데이터 저장
-        let currentUserID = null;       // 현재 활성 사용자 고유 ID
+        let currentUserID = null;       // 현재 활성 사용자 고유 ID (로그인 아이디)
         
         let startTime = 0;      
         let currentInterval = null; 
@@ -330,21 +330,23 @@
 
 
         // ==========================================================
-        // ID 생성 및 Local Storage 관리
+        // ID 로드 및 Local Storage 관리
         // ==========================================================
         
         /**
-         * 고유한 사용자 ID를 생성하거나 로드합니다.
+         * index.html에서 로그인한 사용자 아이디를 가져옵니다.
          */
         function initializeUserID() {
-            let storedID = localStorage.getItem(STORAGE_KEY_CURRENT_USER_ID);
+            const loggedInUsername = localStorage.getItem(STORAGE_KEY_USERNAME);
             
-            if (!storedID) {
-                // 새로운 ID 생성: User_ + 5자리 랜덤 숫자
-                storedID = 'User_' + Math.random().toString(36).substring(2, 7);
-                localStorage.setItem(STORAGE_KEY_CURRENT_USER_ID, storedID);
+            if (!loggedInUsername) {
+                // 로그인하지 않은 경우 index.html로 리다이렉트
+                alert("로그인이 필요합니다. 메인 페이지로 이동합니다.");
+                window.location.href = 'index.html';
+                return;
             }
-            currentUserID = storedID;
+            
+            currentUserID = loggedInUsername;
             userIDDisplay.textContent = `내 ID: ${currentUserID}`;
         }
 
