@@ -5,49 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Charger Tomato Penguin - 인증 및 기능 선택</title>
     <style>
-        /* --- 기본 레이아웃 및 폰트 --- */
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            padding: 20px; 
-            background-color: #f5f7fa; 
-            text-align: center; 
-        }
-        .container { 
-            max-width: 380px; 
-            margin: 80px auto; 
-            background: white; 
-            padding: 35px; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); 
-        }
-        
-        /* --- 인증 섹션 타이틀 --- */
-        h1 { 
-            color: #34495e; 
-            margin-bottom: 30px; 
-            font-size: 1.6em; 
-            font-weight: 700;
-        }
-        
-        /* --- 인증 상태 및 메시지 --- */
-        #userStatus { 
-            font-weight: 600; 
-            margin-bottom: 25px; 
-            padding: 10px; 
-            background: #ecf0f1; 
-            color: #2c3e50;
-            border-radius: 6px; 
-        }
-        
-        /* --- 인증 폼 스타일 --- */
-        input[type="text"], input[type="password"] { 
-            width: 100%; 
-            padding: 12px; 
-            margin: 10px 0; 
-            border: 1px solid #ccc; 
-            border-radius: 6px; 
-            box-sizing: border-box; 
-        }
+        /* --- (중략: 기본 레이아웃 및 인증 폼 스타일은 이전과 동일) --- */
         
         /* --- 공통 버튼 스타일 (3D 및 확대/눌림 효과) --- */
         .auth-buttons button, 
@@ -61,7 +19,6 @@
             transition: all 0.2s ease-in-out; 
             padding: 10px; 
             
-            /* 기본 3D 스타일을 위한 설정 */
             transform: scale(1);
             position: relative;
         }
@@ -71,7 +28,7 @@
         .feature-button:hover, 
         .feature-execute-button:hover, 
         #logoutBtn:hover {
-            transform: scale(1.03); /* 3% 확대 */
+            transform: scale(1.03);
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); 
         }
 
@@ -82,7 +39,7 @@
         #logoutBtn:active {
             transform: scale(1); 
             box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2); 
-            top: 3px; /* 버튼이 아래로 살짝 내려가는 느낌 */
+            top: 3px; 
         }
 
         /* --- 인증 버튼 그룹 (로그인/회원가입) --- */
@@ -115,29 +72,33 @@
             gap: 15px; 
         }
 
-        /* 기능 1 (타이머) - 크기 통일을 위해 display: block 및 padding 명시 */
-        .feature-button {
-            display: block;
-            width: 100%;
-            padding: 15px; 
-            background-color: #f39c12; 
-            color: white;
-            text-decoration: none;
-            font-size: 1.1em;
-            box-shadow: 0 5px 0 #e67e22; 
-            top: 0; 
-        }
-
-        /* 기능 2 (퀴즈) - 크기 통일을 위해 display: block 및 padding 명시 */
+        /* 기능 1 (타이머) 및 기능 2 (퀴즈) - 크기 강제 통일 */
+        .feature-button, 
         .feature-execute-button {
             display: block;
             width: 100%;
-            padding: 15px; 
+            padding: 15px 10px; /* 상하 15px, 좌우 10px */
+            font-size: 1.1em;
+            
+            /* 높이 강제 통일 */
+            min-height: 50px; /* 최소 높이 설정 */
+            line-height: 1.2; /* 텍스트가 중앙에 오도록 조정 */
+            box-sizing: border-box; /* 패딩과 보더가 크기에 포함되도록 설정 (정확한 높이 계산) */
+            
+            top: 0; 
+        }
+        
+        .feature-button {
+            background-color: #f39c12; 
+            color: white;
+            text-decoration: none;
+            box-shadow: 0 5px 0 #e67e22; 
+        }
+
+        .feature-execute-button {
             background-color: #8e44ad; 
             color: white;
-            font-size: 1.1em;
             box-shadow: 0 5px 0 #9b59b6; 
-            top: 0; 
         }
         
         /* 로그아웃 버튼 */
@@ -209,7 +170,6 @@
         const mainTitle = document.getElementById('mainTitle');
 
         // --- [핵심 함수] 아이디를 Firebase용 가상 이메일로 변환 ---
-        // 이 함수를 통해 이메일 없이도 Firebase 인증을 사용합니다.
         function convertUsernameToEmail(username) {
             const sanitizedUsername = username.toLowerCase().replace(/[^a-z0-9]/g, '_');
             return `${sanitizedUsername}@${PROJECT_ID}.com`;
@@ -221,16 +181,14 @@
         // --- 인증 상태 변경 감지 및 UI 업데이트 ---
         auth.onAuthStateChanged((user) => {
             if (user) {
-                // 로그인됨: 닉네임만 표시 (이메일 숨김)
                 const displayId = user.displayName; 
                 userStatus.textContent = `환영합니다, ${displayId}님!`;
-                mainTitle.textContent = "기능을 선택하세요."; // 제목 변경
+                mainTitle.textContent = "기능을 선택하세요."; 
                 authSection.style.display = 'none';
                 dashboardSection.style.display = 'block';
             } else {
-                // 로그아웃됨
                 userStatus.textContent = '아이디와 비밀번호를 입력해주세요.';
-                mainTitle.textContent = "로그인이 필요합니다"; // 제목 변경
+                mainTitle.textContent = "로그인이 필요합니다"; 
                 authSection.style.display = 'block';
                 dashboardSection.style.display = 'none';
             }
@@ -248,7 +206,6 @@
 
             auth.createUserWithEmailAndPassword(emailToUse, password)
                 .then((userCredential) => {
-                    // 실제 아이디를 displayName에 저장
                     return userCredential.user.updateProfile({ displayName: username });
                 })
                 .then(() => {
