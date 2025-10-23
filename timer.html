@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>순공 시간 타이머 (개선)</title>
+    <title>순공 시간 타이머 (상세 기록)</title>
     
     <style>
         /* --- 기본 및 전역 스타일 --- */
@@ -11,23 +11,20 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             text-align: center;
             padding: 20px;
-            background-color: #f4f7f6; /* 부드러운 배경색 */
+            background-color: #f4f7f6;
             color: #333;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
         
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-        }
+        h1 { color: #2c3e50; margin-bottom: 20px; }
 
         /* --- 주요 컨테이너 레이아웃 --- */
         .timer-app-container {
             display: flex;
             width: 90%;
-            max-width: 1000px;
+            max-width: 1200px;
             background-color: #fff;
             border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
@@ -40,7 +37,7 @@
             flex: 1; 
             background-color: #ecf0f1;
             padding: 20px;
-            border-right: 1px solid #ddd; 
+            border-right: 1px solid #ddd;
             overflow-y: auto; 
             max-height: 500px; 
             text-align: left;
@@ -61,9 +58,11 @@
             padding-bottom: 10px;
             border-bottom: 1px dashed #ccc;
             font-size: 0.9em;
+            cursor: pointer; /* 클릭 가능 표시 */
         }
-        .record-entry:last-child {
-            border-bottom: none;
+        .record-entry:hover {
+            background-color: #e0f0ff;
+            border-radius: 4px;
         }
         
         .time-range {
@@ -79,7 +78,7 @@
         }
 
 
-        /* --- 타이머 및 버튼 영역 (우측) --- */
+        /* --- 타이머 및 버튼 영역 (우측/중앙) --- */
         .main-timer-section {
             flex: 2; 
             padding: 30px;
@@ -89,69 +88,55 @@
             justify-content: center;
         }
         
-        /* 총 공부 시간 표시 */
-        #total-study-display {
-            font-size: 1.5em;
-            font-weight: 600;
-            color: #3498db;
-            margin-bottom: 20px;
-        }
-
         /* 현재 타이머 표시 */
         #timer-display {
-            font-size: 6em; 
-            font-family: monospace; 
-            color: #2c3e50;
-            letter-spacing: 5px; 
-            margin: 20px 0;
-            padding: 10px 0;
+            font-size: 6em; font-family: monospace; color: #2c3e50;
+            letter-spacing: 5px; margin: 20px 0; padding: 10px 0;
         }
         
         /* 버튼 스타일 */
         button {
-            padding: 12px 30px;
-            font-size: 1.2em;
-            font-weight: 600;
-            margin: 10px 8px;
-            cursor: pointer;
-            border: none;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 12px 25px; font-size: 1.1em; font-weight: 600;
+            margin: 10px 8px; cursor: pointer; border: none; border-radius: 8px;
+            transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        #start-button {
-            background-color: #2ecc71; color: white;
-        }
-        #start-button:hover:not(:disabled) { background-color: #27ae60; }
+        #start-button { background-color: #2ecc71; color: white; }
+        #stop-button { background-color: #f39c12; color: white; } /* 일시 정지 */
+        #finish-session-button { background-color: #e74c3c; color: white; } /* 세션 종료 */
 
-        #stop-button {
-            background-color: #f39c12; color: white;
-        }
-        #stop-button:hover:not(:disabled) { background-color: #e67e22; }
-
-        #finish-button {
-            background-color: #e74c3c; color: white;
-        }
-        #finish-button:hover:not(:disabled) { background-color: #c0392b; }
+        button:disabled { background-color: #bdc3c7; color: #7f8c8d; cursor: not-allowed; box-shadow: none; }
         
-        button:disabled {
-            background-color: #bdc3c7; color: #7f8c8d; cursor: not-allowed;
-            box-shadow: none;
+        /* --- 모달 (팝업) 스타일 --- */
+        .modal {
+            position: fixed; z-index: 10; left: 0; top: 0; width: 100%; height: 100%;
+            overflow: auto; background-color: rgba(0,0,0,0.4); display: none;
         }
+
+        .modal-content {
+            background-color: #fefefe; margin: 10% auto; padding: 30px; border-radius: 10px;
+            width: 80%; max-width: 500px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); text-align: left;
+        }
+
+        .close-button { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;}
+        .close-button:hover { color: #333; }
+
+        .detail-item {
+            padding: 8px 0; border-bottom: 1px dashed #eee; display: flex; justify-content: space-between;
+            font-size: 0.95em;
+        }
+        .detail-label { font-weight: 600; }
+        .detail-time { color: #3498db; font-family: monospace; }
+        .detail-pause { color: #e74c3c; font-family: monospace; }
         
-        .back-link {
-            margin-top: 30px;
-        }
-        .back-link a {
-            color: #3498db; text-decoration: none; font-weight: 500;
-        }
+        .back-link { margin-top: 30px; }
+        .back-link a { color: #3498db; text-decoration: none; font-weight: 500; }
         .back-link a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
     
-    <h1>순공 시간 측정기</h1>
+    <h1>✏️ 순공 시간 측정기</h1>
     
     <div class="timer-app-container">
         
@@ -171,8 +156,8 @@
                 <button id="start-button">시작</button>
                 
                 <div id="running-controls" style="display: none;">
-                    <button id="stop-button">정지</button>
-                    <button id="finish-button">끝내기</button>
+                    <button id="stop-button">일시 정지</button>
+                    <button id="finish-session-button">세션 종료</button>
                 </div>
             </div>
         </div>
@@ -183,38 +168,53 @@
         <a href="index.html">메인 화면으로 돌아가기</a>
     </div>
 
+    <div id="detail-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3>공부 구간 상세 기록</h3>
+            <div id="modal-details">
+                </div>
+        </div>
+    </div>
+
     <script>
         // --- 상태 관리 변수 ---
-        let startTime = 0;          // 현재 구간의 시작 시각
-        let currentInterval = null; // setInterval ID
+        let startTime = 0;          
+        let currentInterval = null; 
         let currentSectionTime = 0; // 현재 구간의 순공 시간 (타이머 디스플레이용)
         let totalElapsedTime = 0;   // 총 공부 시간 (누적용)
         let isRunning = false;      // 타이머가 실행 중인지
         let isPaused = false;       // 타이머가 명시적으로 정지된 상태인지
-        let sessionStartTime = null; // 전체 세션 시작 시각 (타임스탬프)
-        let currentSectionStartClock = null; // 현재 구간 시작 시각 (Date 객체)
+        let sessionStartTime = null; 
+        let currentSectionStartClock = null; 
+        
+        // 현재 공부 구간의 시작/정지/재시작 기록을 담는 임시 배열
+        let currentSegmentDetails = []; 
+        let segmentIndex = 0; // 구간 인덱스
 
         // DOM 요소 가져오기
         const timerDisplay = document.getElementById('timer-display');
         const totalStudyDisplay = document.getElementById('total-study-display');
         const startButton = document.getElementById('start-button');
-        const stopButton = document.getElementById('stop-button');
-        const finishButton = document.getElementById('finish-button');
+        const stopButton = document.getElementById('stop-button'); // 일시 정지
+        const finishButton = document.getElementById('finish-session-button'); // 세션 종료
         const recordsList = document.getElementById('records-list');
         const runningControls = document.getElementById('running-controls');
+        
+        const modal = document.getElementById('detail-modal');
+        const modalDetails = document.getElementById('modal-details');
+        const closeButton = document.querySelector('.close-button');
 
         // --- 시간 포맷팅 함수 ---
-        // 시:분:초.밀리초(0.01초) 형식
         function formatTime(ms) {
             const totalSeconds = Math.floor(ms / 1000);
             const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
             const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
             const seconds = String(totalSeconds % 60).padStart(2, '0');
-            const centiseconds = String(Math.floor((ms % 1000) / 10)).padStart(2, '0'); // 0.01초 단위
+            const centiseconds = String(Math.floor((ms % 1000) / 10)).padStart(2, '0');
             return `${hours}:${minutes}:${seconds}.${centiseconds}`;
         }
         
-        // 시:분:초 형식 (총 공부 시간/기록용)
         function formatSimpleTime(ms) {
             const totalSeconds = Math.floor(ms / 1000);
             const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
@@ -223,26 +223,38 @@
             return `${hours}:${minutes}:${seconds}`;
         }
 
-        // 시각을 '오후 1:10:30' 형식으로 포맷팅
         function formatClockTime(date) {
             return date.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true });
         }
 
-        // --- 기록 함수 (수정) ---
-        function recordStudySection(startTimeObj, endTimeObj, durationMs) {
+        // --- 상세 기록 저장 (세그먼트 배열에 푸시) ---
+        function addSegmentDetail(type, reason = '') {
+            currentSegmentDetails.push({
+                index: segmentIndex,
+                type: type, // 'study_start', 'pause', 'resume', 'session_end'
+                time: new Date(),
+                reason: reason
+            });
+        }
+
+        // --- 좌측 기록 바에 최종 구간 기록 (클릭 이벤트 포함) ---
+        function recordStudySection(startTimeObj, endTimeObj, durationMs, details) {
             const startClock = formatClockTime(startTimeObj);
             const endClock = formatClockTime(endTimeObj);
             const durationFormatted = formatSimpleTime(durationMs);
 
             const item = document.createElement('div');
             item.className = 'record-entry';
+            item.dataset.segmentIndex = segmentIndex;
             
+            // 기록 클릭 시 모달 표시 이벤트 리스너 추가
+            item.addEventListener('click', () => showDetailModal(details));
+
             item.innerHTML = `
                 <span class="time-range">${startClock} ~ ${endClock}</span>
                 <span class="study-duration">순공 시간: ${durationFormatted}</span>
             `;
             
-            // 초기 안내 메시지 제거
             if (recordsList.querySelector('p')) {
                  recordsList.innerHTML = '';
             }
@@ -256,11 +268,10 @@
             const now = Date.now();
             const elapsedSinceStart = now - startTime;
             
-            // 현재 구간 시간과 총 공부 시간을 누적
             currentSectionTime += elapsedSinceStart;
             totalElapsedTime += elapsedSinceStart;
             
-            startTime = now; // 시작 시간 갱신
+            startTime = now; 
             
             timerDisplay.textContent = formatTime(currentSectionTime);
             totalStudyDisplay.textContent = `총 공부 시간: ${formatSimpleTime(totalElapsedTime)}`;
@@ -270,89 +281,142 @@
         function startTimer() {
             if (isRunning) return;
 
-            // 첫 시작 시, 전체 세션 시작 시각 기록
             if (!sessionStartTime) {
                 sessionStartTime = Date.now();
+                addSegmentDetail('session_start');
+            } else if (isPaused) {
+                // 일시 정지 후 재시작
+                addSegmentDetail('resume');
             }
             
-            // 구간 시작 시각 기록
             currentSectionStartClock = new Date();
 
             isRunning = true;
             isPaused = false;
             
-            // 버튼 전환
             startButton.style.display = 'none';
             runningControls.style.display = 'block';
+            stopButton.textContent = '일시 정지'; // 버튼 텍스트 초기화
 
             startTime = Date.now(); 
             currentInterval = setInterval(updateTimer, 10); 
         }
 
-        function stopTimer(isFinish = false) {
+        // 일시 정지 (사용자 버튼 클릭 또는 화면 전환)
+        function pauseTimer(reason) {
             if (!isRunning) return;
             
             clearInterval(currentInterval);
             
-            // 현재 순공 구간 기록 및 currentSectionTime 초기화
+            // 상세 기록 추가
+            addSegmentDetail('pause', reason);
+
+            // 현재 순공 구간 기록
             if (currentSectionTime > 0) {
                 const endTimeObj = new Date();
-                recordStudySection(currentSectionStartClock, endTimeObj, currentSectionTime);
+                recordStudySection(currentSectionStartClock, endTimeObj, currentSectionTime, currentSegmentDetails);
                 currentSectionTime = 0; // 디스플레이 타이머 리셋
+                currentSegmentDetails = []; // 상세 기록 초기화
+                segmentIndex++; // 다음 구간 인덱스 증가
             }
-
+            
             isRunning = false;
             isPaused = true;
             
-            if (isFinish) {
-                // 최종 끝내기
-                sessionStartTime = null;
-                totalElapsedTime = 0; 
-                isPaused = false;
-                
-                // 버튼 비활성화 (새 세션 시작을 위해 새로고침 유도)
-                startButton.style.display = 'block';
-                runningControls.style.display = 'none';
-                startButton.disabled = true;
-                
-                timerDisplay.textContent = '00:00:00.00';
-                totalStudyDisplay.textContent = '총 공부 시간: 00:00:00';
-                alert(`공부 끝! 총 순공 시간이 초기화됩니다.`);
-                
-            } else {
-                // 정지 버튼을 누른 경우, 다시 시작할 수 있도록 시작 버튼 활성화
-                startButton.style.display = 'block';
-                runningControls.style.display = 'none';
+            startButton.style.display = 'block';
+            runningControls.style.display = 'none';
+        }
+
+        // 세션 종료 (이전의 '끝내기' 기능)
+        function endSession() {
+            if (!sessionStartTime) return;
+            
+            // 현재 실행 중이면, 마지막 구간 기록
+            if (isRunning) {
+                clearInterval(currentInterval);
+                if (currentSectionTime > 0) {
+                    const endTimeObj = new Date();
+                    recordStudySection(currentSectionStartClock, endTimeObj, currentSectionTime, currentSegmentDetails);
+                }
             }
+            
+            addSegmentDetail('session_end');
+
+            // 최종 상태 초기화 및 버튼 비활성화
+            sessionStartTime = null;
+            isRunning = false;
+            isPaused = false;
+            
+            startButton.style.display = 'block';
+            runningControls.style.display = 'none';
+            startButton.disabled = true; // 세션이 끝나면 새 세션 시작을 위해 새로고침 유도
+            
+            timerDisplay.textContent = '00:00:00.00';
+            totalStudyDisplay.textContent = `총 공부 시간: 00:00:00`;
+            alert(`세션이 종료되었습니다. 총 순공 시간: ${formatSimpleTime(totalElapsedTime)}`);
+            
+            totalElapsedTime = 0; // 총 누적 시간 초기화
+            currentSectionTime = 0; 
+            currentSegmentDetails = []; 
+            segmentIndex = 0;
+            recordsList.innerHTML = '<p style="padding: 10px; font-size: 0.9em; color: #7f8c8d;">' + 
+                                    '세션이 종료되었습니다. 새로고침 후 다시 시작하세요.</p>';
         }
         
-        // --- 페이지 가시성 제어 (다른 창으로 나가면 멈춤) ---
-        
+        // --- 페이지 가시성 제어 ---
         function handleVisibilityChange() {
-            // isRunning 상태에서만 제어
             if (document.hidden) {
-                // 탭 비활성화/최소화 시
                 if (isRunning) {
-                    stopTimer(false); // 실행 중이었다면 정지 (기록 남김)
+                    pauseTimer('화면 전환'); 
                 }
             } else {
-                // 탭 재활성화 시
-                // 세션이 시작된 상태이고 현재 정지 상태라면
                 if (sessionStartTime && isPaused) { 
-                    startTimer(); // 타이머 재시작 (이어서 누적)
-                    isPaused = false; // 정지 상태 해제
+                    startTimer(); 
                 }
             }
         }
+        
+        // --- 모달 제어 ---
+        function showDetailModal(details) {
+            modalDetails.innerHTML = '';
+            
+            details.forEach(detail => {
+                let label = '';
+                let timeClass = 'detail-time';
+                
+                switch (detail.type) {
+                    case 'study_start': label = '공부 시작'; break;
+                    case 'pause': label = '일시 정지'; timeClass = 'detail-pause'; break;
+                    case 'resume': label = '재시작'; break;
+                    case 'session_start': label = '세션 시작'; break;
+                    case 'session_end': label = '세션 종료'; break;
+                    default: label = '기록';
+                }
+                
+                // 일시 정지인 경우 이유 표시
+                if (detail.reason) {
+                    label += ` (${detail.reason})`;
+                }
+
+                modalDetails.innerHTML += `
+                    <div class="detail-item">
+                        <span class="detail-label">${label}</span>
+                        <span class="${timeClass}">${formatClockTime(detail.time)}</span>
+                    </div>
+                `;
+            });
+
+            modal.style.display = 'block';
+        }
+        
+        closeButton.onclick = function() { modal.style.display = 'none'; }
+        window.onclick = function(event) { if (event.target == modal) { modal.style.display = 'none'; } }
 
         // --- 이벤트 리스너 등록 ---
         startButton.addEventListener('click', startTimer);
-        stopButton.addEventListener('click', () => {
-            stopTimer(false); 
-        });
-        finishButton.addEventListener('click', () => stopTimer(true)); 
+        stopButton.addEventListener('click', () => { pauseTimer('사용자 정지'); }); 
+        finishButton.addEventListener('click', endSession); 
         
-        // 페이지 가시성 이벤트 리스너 등록
         document.addEventListener('visibilitychange', handleVisibilityChange);
     </script>
 </body>
