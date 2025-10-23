@@ -1,39 +1,24 @@
- const firebaseConfig = {
-    apiKey: "AIzaSyB_nt4nzPfp-trlT8QHNFPFpd-oKqfyWGo",
-    authDomain: "penguineatpenguin.firebaseapp.com",
-    projectId: "penguineatpenguin",
-    storageBucket: "penguineatpenguin.firebasestorage.app",
-    messagingSenderId: "757747390049",
-    appId: "1:757747390049:web:72bcdc12d5eb3bc1b97c20",
-    measurementId: "G-XCT650Z39X"
-  };
-
-// Firebase 초기화
-firebase.initializeApp(firebaseConfig);
-
-// Firebase 참조를 전역적으로 접근 가능하도록 window 객체에 연결 (모듈화가 복잡해지는 것을 방지)
-window.messagesRef = firebase.database().ref('messages');
-window.activeNicknamesRef = firebase.database().ref('activeUserNicknames');
-window.chatStatusRef = firebase.database().ref('chatStatus'); 
-
-
-// HTML 요소 선택
+// HTML 요소 선택 (모든 화면 요소 포함)
 const mainScreen = document.getElementById('main-screen');
 const chatScreen = document.getElementById('chat-screen');
 const timerScreen = document.getElementById('timer-screen');
 
 const goToChatBtn = document.getElementById('go-to-chat-btn');
 const goToTimerBtn = document.getElementById('go-to-timer-btn');
-const backToMainBtns = document.querySelectorAll('.back-to-main-btn');
+const backToMainBtns = document.querySelectorAll('.back-to-main-btn'); // 메인으로 돌아가기 버튼들
 
-/* -------------------- 화면 전환 로직 -------------------- */
+
+/* -------------------- A. 화면 전환 로직 (핵심) -------------------- */
 
 /**
  * 특정 화면만 보이도록 전환하는 함수
  * @param {HTMLElement} screenToShow - 보여줄 화면 요소
  */
 function showScreen(screenToShow) {
-    const screens = [mainScreen, chatScreen, timerScreen];
+    // 모든 화면 요소를 배열로 만듭니다.
+    const screens = [mainScreen, chatScreen, timerScreen]; 
+    
+    // 1. 모든 화면 숨김/보임 처리
     screens.forEach(screen => {
         if (screen === screenToShow) {
             screen.classList.remove('hidden');
@@ -42,20 +27,20 @@ function showScreen(screenToShow) {
         }
     });
 
-    // 🚨 화면 전환 시 기능 제어
+    // 2. 화면에 따른 기능 실행/정지
     if (screenToShow === timerScreen) {
-        // 타이머 화면 진입 시: 타이머 시작 로직 호출
-        window.handleVisibilityChange();
+        // 타이머 화면 진입 시: 타이머 시작 (timer.js의 전역 함수 호출)
+        if (window.handleVisibilityChange) window.handleVisibilityChange();
     } else {
-        // 다른 화면 진입 시: 타이머 정지 로직 호출 (timer.js에 정의됨)
-        if (window.stopTimer) window.stopTimer(); 
+        // 타이머 화면 이탈 시: 타이머 정지 (timer.js의 전역 함수 호출)
+        if (window.stopTimer) window.stopTimer();
     }
 
     if (screenToShow === chatScreen) {
-        // 채팅 화면 진입 시: 자동 로그인/닉네임 처리 로직 호출 (chat.js에 정의됨)
+        // 채팅 화면 진입 시: 자동 로그인/닉네임 처리 시작 (chat.js의 전역 함수 호출)
         if (window.handleChatInitialization) window.handleChatInitialization();
     } else {
-        // 채팅 화면 이탈 시: Firebase 연결 해제 로직 호출 (chat.js에 정의됨)
+        // 채팅 화면 이탈 시: Firebase 연결 해제 (chat.js의 전역 함수 호출)
         if (window.handleChatDisconnection) window.handleChatDisconnection();
     }
 }
@@ -69,18 +54,9 @@ backToMainBtns.forEach(btn => {
     btn.addEventListener('click', () => showScreen(mainScreen));
 });
 
-// 초기 화면 설정
-showScreen(mainScreen);
-
-// 페이지 가시성 이벤트 리스너 등록 (timer.js의 로직이 전역적으로 필요하므로 여기에 유지)
-// 🚨 이 이벤트는 전역적이며, timer.js가 정의된 후에만 호출되어야 함.
+// 페이지 가시성 이벤트 리스너 등록
+// 탭이 전환되거나 최소화될 때마다 타이머를 제어합니다.
 document.addEventListener('visibilitychange', () => {
-    // 타이머 화면일 때만 실행
-    if (!timerScreen.classList.contains('hidden')) {
-        window.handleVisibilityChange();
-    }
-    // 채팅 화면일 때만 실행 (선택 사항: 채팅 연결/해제를 탭 가시성에 따라 제어하려면)
-    // if (!chatScreen.classList.contains('hidden')) {
-    //     window.handleChatVisibilityChange(); 
-    // }
+    // 타이머 화면일 때만 타이머 로직(timer.js)이 작동하도록 연결
+    if (window.handleVisibilityChange) window.handleVisibilityChange();
 });
