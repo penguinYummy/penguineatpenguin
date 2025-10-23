@@ -60,7 +60,7 @@
 
         <div id="authSection" class="auth-section" style="display: none;">
             <h3>로그인이 필요합니다</h3>
-            <input type="email" id="emailInput" placeholder="이메일">
+            <input type="email" id="emailInput" placeholder="아이디디">
             <input type="password" id="passwordInput" placeholder="비밀번호">
             <div class="auth-buttons">
                 <button id="loginBtn">로그인</button>
@@ -117,12 +117,12 @@
         auth.onAuthStateChanged((user) => {
             if (user) {
                 // 로그인됨: 기능 선택 영역 표시
-                userStatus.textContent = `🟢 환영합니다, ${user.email}님!`;
+                userStatus.textContent = `환영합니다, ${user.email}님!`;
                 authSection.style.display = 'none';
                 dashboardSection.style.display = 'block';
             } else {
                 // 로그아웃됨: 로그인/회원가입 영역 표시
-                userStatus.textContent = '🔴 로그인을 해주세요.';
+                userStatus.textContent = '로그인을 해주세요.';
                 authSection.style.display = 'block';
                 dashboardSection.style.display = 'none';
             }
@@ -176,4 +176,5 @@
     </script>
 </body>
 </html>
+
 
