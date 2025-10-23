@@ -6,167 +6,167 @@
     <title>Charger Tomato Penguin - 인증 및 기능 선택</title>
     <style>
         /* --- 기본 레이아웃 및 폰트 --- */
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            padding: 20px; 
-            background-color: #f5f7fa; 
-            text-align: center; 
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            padding: 20px; 
+            background-color: #f5f7fa; 
+            text-align: center; 
         }
-        .container { 
-            max-width: 380px; 
-            margin: 80px auto; 
-            background: white; 
-            padding: 35px; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); 
+        .container { 
+            max-width: 380px; 
+            margin: 80px auto; 
+            background: white; 
+            padding: 35px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); 
         }
-         
+         
         /* --- 인증 섹션 타이틀 --- */
-        h1 { 
-            color: #34495e; 
-            margin-bottom: 30px; 
-            font-size: 1.6em; 
+        h1 { 
+            color: #34495e; 
+            margin-bottom: 30px; 
+            font-size: 1.6em; 
             font-weight: 700;
         }
-         
+         
         /* --- 인증 상태 및 메시지 --- */
-        #userStatus { 
-            font-weight: 600; 
-            margin-bottom: 25px; 
-            padding: 10px; 
-            background: #ecf0f1; 
+        #userStatus { 
+            font-weight: 600; 
+            margin-bottom: 25px; 
+            padding: 10px; 
+            background: #ecf0f1; 
             color: #2c3e50;
-            border-radius: 6px; 
+            border-radius: 6px; 
         }
-         
+         
         /* --- 인증 폼 스타일 (입력창) --- */
-        input[type="text"], input[type="password"] { 
-            width: 100%; 
-            padding: 12px; 
-            margin: 10px 0; 
-            border: 1px solid #ccc; 
-            border-radius: 6px; 
-            box-sizing: border-box; 
+        input[type="text"], input[type="password"] { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 10px 0; 
+            border: 1px solid #ccc; 
+            border-radius: 6px; 
+            box-sizing: border-box; 
         }
-         
+         
         /* --- 공통 버튼 스타일 (3D 및 확대/눌림 효과) --- */
-        .auth-buttons button, 
-        .feature-button, 
-        .feature-execute-button, 
+        .auth-buttons button, 
+        .feature-button, 
+        .feature-execute-button, 
         #logoutBtn {
             border: none;
-            border-radius: 6px; 
+            border-radius: 6px; 
             cursor: pointer;
             font-weight: bold;
-            transition: all 0.2s ease-in-out; 
-             
+            transition: all 0.2s ease-in-out; 
+             
             /* 3D 및 애니메이션 기본값 */
             transform: scale(1);
             position: relative;
         }
-         
+         
         /* 마우스 호버 시 확대 및 그림자 변화 */
-        .auth-buttons button:hover, 
-        .feature-button:hover, 
-        .feature-execute-button:hover, 
+        .auth-buttons button:hover, 
+        .feature-button:hover, 
+        .feature-execute-button:hover, 
         #logoutBtn:hover {
-            transform: scale(1.03); 
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); 
+            transform: scale(1.03); 
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); 
         }
 
         /* 클릭(Active) 시 눌리는 효과 */
-        .auth-buttons button:active, 
-        .feature-button:active, 
-        .feature-execute-button:active, 
+        .auth-buttons button:active, 
+        .feature-button:active, 
+        .feature-execute-button:active, 
         #logoutBtn:active {
-            transform: scale(1); 
-            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2); 
-            top: 3px; 
+            transform: scale(1); 
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2); 
+            top: 3px; 
         }
 
         /* --- 인증 버튼 그룹 (로그인/회원가입) --- */
         .auth-buttons {
-            display: flex; 
+            display: flex; 
             justify-content: space-between;
             margin-top: 20px;
         }
-        .auth-buttons button { 
-            width: 48%; 
-            padding: 10px; 
-            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2); 
-            top: 0; 
+        .auth-buttons button { 
+            width: 48%; 
+            padding: 10px;
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2); 
+            top: 0; 
         }
-        #signupBtn { 
-            background-color: #27ae60; 
-            color: white; 
-            box-shadow: 0 4px 0 #208e4d; 
+        #signupBtn { 
+            background-color: #27ae60; 
+            color: white; 
+            box-shadow: 0 4px 0 #208e4d; 
         }
-        #loginBtn { 
-            background-color: #2980b9; 
-            color: white; 
-            box-shadow: 0 4px 0 #206d9a; 
+        #loginBtn { 
+            background-color: #2980b9; 
+            color: white; 
+            box-shadow: 0 4px 0 #206d9a; 
         }
 
         /* --- 기능 버튼 컨테이너 (로그인 후 대시보드) --- */
-        .button-container { 
-            margin-top: 30px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 15px; 
-             
-            /* 버튼 너비 제한 및 중앙 정렬 (핵심 수정) */
-            max-width: 300px; 
-            margin: 30px auto 0 auto; 
+        .button-container { 
+            margin-top: 30px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+             
+            /* 버튼 너비 제한 및 중앙 정렬 */
+            max-width: 300px;
+            margin: 30px auto 0 auto;
         }
-         
+         
         /* 기능 1 (타이머) 및 기능 2 (퀴즈) - 크기 통일을 위해 flex 사용 */
-        .feature-button, 
+        .feature-button, 
         .feature-execute-button {
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
+            display: flex; 
+            justify-content: center;
+            align-items: center;
             width: 100%;
-            padding: 15px 10px; 
-            min-height: 50px; 
+            padding: 15px 10px;
+            min-height: 50px;
             font-size: 1.1em;
-            text-decoration: none; 
-            box-sizing: border-box; 
-            top: 0; 
+            text-decoration: none;
+            box-sizing: border-box;
+            top: 0; 
         }
-         
+         
         .feature-button {
-            background-color: #f39c12; 
+            background-color: #f39c12; 
             color: white;
-            box-shadow: 0 5px 0 #e67e22; 
+            box-shadow: 0 5px 0 #e67e22; 
         }
 
         .feature-execute-button {
-            background-color: #8e44ad; 
+            background-color: #8e44ad; 
             color: white;
-            box-shadow: 0 5px 0 #9b59b6; 
+            box-shadow: 0 5px 0 #9b59b6; 
         }
-         
+         
         /* 로그아웃 버튼 */
-        #logoutBtn { 
-            background-color: #c0392b; 
-            color: white; 
-            margin-top: 30px; 
-            width: 100%; 
+        #logoutBtn { 
+            background-color: #c0392b; 
+            color: white; 
+            margin-top: 30px; 
+            width: 100%;
             padding: 10px;
-            box-shadow: 0 4px 0 #a03126; 
-            top: 0; 
+            box-shadow: 0 4px 0 #a03126; 
+            top: 0; 
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1 id="mainTitle">로그인이 필요합니다</h1> 
+        <h1 id="mainTitle">로그인이 필요합니다</h1> 
 
         <div id="userStatus">인증 상태 확인 중...</div>
 
         <div id="authSection" class="auth-section" style="display: none;">
-            <input type="text" id="usernameInput" placeholder="사용할 아이디"> 
+            <input type="text" id="usernameInput" placeholder="사용할 아이디"> 
             <input type="password" id="passwordInput" placeholder="비밀번호">
             <div class="auth-buttons">
                 <button id="loginBtn">로그인</button>
@@ -175,21 +175,21 @@
         </div>
 
         <div id="dashboardSection" style="display: none;">
-             
+             
             <div class="button-container">
                 <a href="timer.html" class="feature-button">기능 1 (순공 시간 타이머)</a>
                 <button onclick="goToFeature2()" class="feature-execute-button">기능 2 (History Quiz) 실행</button>
             </div>
-             
+             
             <button id="logoutBtn">로그아웃</button>
         </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-     
+     
     <script>
-        // --- Firebase 설정 (원본 유지) ---
+        // --- Firebase 설정 ---
         const firebaseConfig = {
             apiKey: "AIzaSyB_nt4nzPfp-trlT8QHNFPFpd-oKqfyWGo",
             authDomain: "penguineatpenguin.firebaseapp.com",
@@ -201,11 +201,11 @@
         };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
-        const PROJECT_ID = firebaseConfig.projectId; 
-        const STORAGE_KEY_USERNAME = 'currentLoggedInUsername'; // 아이디 저장 키
+        const PROJECT_ID = firebaseConfig.projectId; 
+        const STORAGE_KEY_USERNAME = 'currentLoggedInUsername';
 
         // --- DOM 요소 ---
-        const usernameInput = document.getElementById('usernameInput'); 
+        const usernameInput = document.getElementById('usernameInput'); 
         const passwordInput = document.getElementById('passwordInput');
         const signupBtn = document.getElementById('signupBtn');
         const loginBtn = document.getElementById('loginBtn');
@@ -215,36 +215,37 @@
         const dashboardSection = document.getElementById('dashboardSection');
         const mainTitle = document.getElementById('mainTitle');
 
-        // --- [핵심 함수] 아이디를 Firebase용 가상 이메일로 변환 ---
+        // --- 아이디를 Firebase용 가상 이메일로 변환 ---
         function convertUsernameToEmail(username) {
             const sanitizedUsername = username.toLowerCase().replace(/[^a-z0-9]/g, '_');
             return `${sanitizedUsername}@${PROJECT_ID}.com`;
         }
+        
         function goToFeature2() {
-            window.location.href = 'history quiz.html'; 
+            window.location.href = 'history quiz.html'; 
         }
         
-        // --- [추가] 로그인 성공 후 아이디를 LocalStorage에 저장하는 함수 ---
+        // --- 로그인 성공 후 아이디를 LocalStorage에 저장 ---
         function handleLoginSuccess(username) {
-             localStorage.setItem(STORAGE_KEY_USERNAME, username);
-             alert("로그인 성공!");
+            localStorage.setItem(STORAGE_KEY_USERNAME, username);
+            alert("로그인 성공!");
         }
 
         // --- 인증 상태 변경 감지 및 UI 업데이트 ---
         auth.onAuthStateChanged((user) => {
             if (user) {
-                const displayId = user.displayName; 
+                const displayId = user.displayName; 
                 userStatus.textContent = `환영합니다, ${displayId}님!`;
-                mainTitle.textContent = "기능을 선택하세요."; 
+                mainTitle.textContent = "기능을 선택하세요."; 
                 authSection.style.display = 'none';
                 dashboardSection.style.display = 'block';
                 
-                // 로그인 상태 유지 시에도 LocalStorage에 아이디 저장 (새로고침 대응)
+                // 로그인 상태 유지 시에도 LocalStorage에 아이디 저장
                 localStorage.setItem(STORAGE_KEY_USERNAME, displayId);
 
             } else {
                 userStatus.textContent = '아이디와 비밀번호를 입력해주세요.';
-                mainTitle.textContent = "로그인이 필요합니다"; 
+                mainTitle.textContent = "로그인이 필요합니다"; 
                 authSection.style.display = 'block';
                 dashboardSection.style.display = 'none';
                 
@@ -253,14 +254,20 @@
             }
         });
 
-        // --- 1. 회원가입 핸들러 (아이디 기반) ---
+        // --- 회원가입 핸들러 ---
         signupBtn.addEventListener('click', () => {
             const username = usernameInput.value.trim();
             const password = passwordInput.value;
-             
-            if (!username) { alert("사용할 아이디를 입력해주세요."); return; }
-            if (password.length < 6) { alert("비밀번호는 6자리 이상이어야 합니다."); return; }
-             
+             
+            if (!username) { 
+                alert("사용할 아이디를 입력해주세요."); 
+                return; 
+            }
+            if (password.length < 6) { 
+                alert("비밀번호는 6자리 이상이어야 합니다."); 
+                return; 
+            }
+             
             const emailToUse = convertUsernameToEmail(username);
 
             auth.createUserWithEmailAndPassword(emailToUse, password)
@@ -268,7 +275,7 @@
                     return userCredential.user.updateProfile({ displayName: username });
                 })
                 .then(() => {
-                    handleLoginSuccess(username); // 회원가입 후 로그인 성공 처리
+                    handleLoginSuccess(username);
                 })
                 .catch((error) => {
                     console.error("회원가입 오류:", error.code, error.message);
@@ -280,18 +287,20 @@
                 });
         });
 
-        // --- 2. 로그인 핸들러 (아이디 기반) ---
+        // --- 로그인 핸들러 ---
         loginBtn.addEventListener('click', () => {
             const username = usernameInput.value.trim();
             const password = passwordInput.value;
 
-            if (!username || !password) { alert("아이디와 비밀번호를 모두 입력해주세요."); return; }
+            if (!username || !password) { 
+                alert("아이디와 비밀번호를 모두 입력해주세요."); 
+                return; 
+            }
 
-            const emailToUse = convertUsernameToEmail(username); 
+            const emailToUse = convertUsernameToEmail(username); 
 
             auth.signInWithEmailAndPassword(emailToUse, password)
                 .then((userCredential) => {
-                    // 로그인 성공 시 displayName 사용
                     const username = userCredential.user.displayName;
                     handleLoginSuccess(username); 
                 })
@@ -305,14 +314,16 @@
                 });
         });
 
-        // --- 3. 로그아웃 핸들러 ---
+        // --- 로그아웃 핸들러 ---
         logoutBtn.addEventListener('click', () => {
             auth.signOut()
                 .then(() => { 
-                    localStorage.removeItem(STORAGE_KEY_USERNAME); // 로그아웃 시 아이디 삭제
+                    localStorage.removeItem(STORAGE_KEY_USERNAME);
                     alert("로그아웃되었습니다."); 
                 })
-                .catch((error) => { console.error("로그아웃 오류:", error); });
+                .catch((error) => { 
+                    console.error("로그아웃 오류:", error); 
+                });
         });
     </script>
 </body>
