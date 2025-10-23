@@ -9,23 +9,23 @@
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             padding: 20px; 
-            background-color: #f5f7fa; /* 더 밝고 부드러운 배경색 */
+            background-color: #f5f7fa; 
             text-align: center; 
         }
         .container { 
-            max-width: 380px; /* 컨테이너 폭 더 좁게 */
-            margin: 80px auto; /* 상단 여백 증가 */
+            max-width: 380px; 
+            margin: 80px auto; 
             background: white; 
             padding: 35px; 
             border-radius: 12px; 
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* 그림자 부드럽게 */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); 
         }
         
-        /* --- 인증 섹션 타이틀 (간결화) --- */
+        /* --- 인증 섹션 타이틀 --- */
         h1 { 
             color: #34495e; 
             margin-bottom: 30px; 
-            font-size: 1.6em; /* 제목 크기 */
+            font-size: 1.6em; 
             font-weight: 700;
         }
         
@@ -34,15 +34,12 @@
             font-weight: 600; 
             margin-bottom: 25px; 
             padding: 10px; 
-            background: #ecf0f1; /* 은은한 회색 배경 */
+            background: #ecf0f1; 
             color: #2c3e50;
             border-radius: 6px; 
         }
         
         /* --- 인증 폼 스타일 --- */
-        .auth-section h3 {
-            display: none; /* '로그인이 필요합니다' 문구는 h1으로 대체하고 숨김 */
-        }
         input[type="text"], input[type="password"] { 
             width: 100%; 
             padding: 12px; 
@@ -52,7 +49,43 @@
             box-sizing: border-box; 
         }
         
-        /* --- 인증 버튼 --- */
+        /* --- 공통 버튼 스타일 (3D 및 확대 효과) --- */
+        .auth-buttons button, 
+        .feature-button, 
+        .feature-execute-button, 
+        #logoutBtn {
+            border: none;
+            border-radius: 8px; /* 통일된 둥근 모서리 */
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease-in-out; /* 부드러운 전환 효과 */
+            padding: 12px;
+            
+            /* 기본 3D 스타일 */
+            transform: scale(1);
+            position: relative;
+        }
+        
+        /* 마우스 호버 시 확대 및 그림자 제거 */
+        .auth-buttons button:hover, 
+        .feature-button:hover, 
+        .feature-execute-button:hover, 
+        #logoutBtn:hover {
+            transform: scale(1.03); /* 3% 확대 */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* 호버 시 그림자를 더 부드럽게 */
+        }
+
+        /* 클릭(Active) 시 눌리는 효과 */
+        .auth-buttons button:active, 
+        .feature-button:active, 
+        .feature-execute-button:active, 
+        #logoutBtn:active {
+            transform: scale(1); /* 원래 크기로 복귀 */
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2); /* 3D 그림자 줄이기 */
+            top: 2px; /* 버튼이 살짝 눌리는 느낌 */
+        }
+        
+        /* --- 인증 버튼 그룹 --- */
         .auth-buttons {
             display: flex; 
             justify-content: space-between;
@@ -61,74 +94,48 @@
         .auth-buttons button { 
             width: 48%; 
             padding: 10px; 
-            border: none; 
-            border-radius: 6px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            transition: background-color 0.2s;
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2); /* 3D 그림자 */
         }
         #signupBtn { 
-            background-color: #27ae60; /* 더 진한 초록색 */
+            background-color: #27ae60; 
             color: white; 
         }
         #loginBtn { 
-            background-color: #2980b9; /* 더 진한 파란색 */
+            background-color: #2980b9; 
             color: white; 
         }
 
         /* --- 기능 버튼 컨테이너 (로그인 후 대시보드) --- */
         .button-container { margin-top: 30px; display: flex; flex-direction: column; gap: 15px; }
 
-        /* 기능 1 (타이머) 스타일 조정 */
+        /* 기능 1 (타이머) */
         .feature-button {
             display: block;
             width: 100%;
-            padding: 15px;
-            background-color: #f39c12; /* 오렌지색 */
+            background-color: #f39c12; 
             color: white;
             text-decoration: none;
-            border-radius: 8px;
             font-size: 1.1em;
-            font-weight: bold;
-            box-shadow: 0 4px 0 #e67e22; /* 3D 효과 추가 */
-            transition: all 0.1s;
-        }
-        .feature-button:active {
-             box-shadow: 0 1px 0 #e67e22;
-             transform: translateY(3px);
+            box-shadow: 0 5px 0 #e67e22; /* 3D 그림자 */
         }
 
-        /* 기능 2 (퀴즈) 스타일 조정 */
+        /* 기능 2 (퀴즈) */
         .feature-execute-button {
             display: block;
             width: 100%;
-            padding: 15px;
-            background-color: #8e44ad; /* 보라색 */
+            background-color: #8e44ad; 
             color: white;
-            border: none;
-            border-radius: 8px;
             font-size: 1.1em;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #9b59b6; /* 3D 효과 추가 */
-            transition: all 0.1s;
-        }
-        .feature-execute-button:active {
-             box-shadow: 0 1px 0 #9b59b6;
-             transform: translateY(3px);
+            box-shadow: 0 5px 0 #9b59b6; /* 3D 그림자 */
         }
         
-        /* 로그아웃 버튼 스타일 조정 */
+        /* 로그아웃 버튼 */
         #logoutBtn { 
-            background-color: #c0392b; /* 진한 빨간색 */
+            background-color: #c0392b; 
             color: white; 
             margin-top: 30px; 
             width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
+            box-shadow: 0 4px 0 #a03126; /* 3D 그림자 */
         }
     </style>
 </head>
@@ -186,7 +193,7 @@
         const userStatus = document.getElementById('userStatus');
         const authSection = document.getElementById('authSection');
         const dashboardSection = document.getElementById('dashboardSection');
-        const mainTitle = document.getElementById('mainTitle'); // 새로 추가
+        const mainTitle = document.getElementById('mainTitle');
 
         // --- [핵심 함수] 아이디를 Firebase용 가상 이메일로 변환 ---
         function convertUsernameToEmail(username) {
@@ -200,16 +207,14 @@
         // --- 인증 상태 변경 감지 및 UI 업데이트 ---
         auth.onAuthStateChanged((user) => {
             if (user) {
-                // 로그인됨: 닉네임 표시 및 제목 변경
                 const displayId = user.displayName; 
                 userStatus.textContent = `환영합니다, ${displayId}님!`;
-                mainTitle.textContent = "기능을 선택하세요."; // 제목 변경
+                mainTitle.textContent = "기능을 선택하세요."; 
                 authSection.style.display = 'none';
                 dashboardSection.style.display = 'block';
             } else {
-                // 로그아웃됨: 로그인/회원가입 영역 표시 및 제목 변경
                 userStatus.textContent = '아이디와 비밀번호를 입력해주세요.';
-                mainTitle.textContent = "로그인이 필요합니다"; // 제목 변경
+                mainTitle.textContent = "로그인이 필요합니다"; 
                 authSection.style.display = 'block';
                 dashboardSection.style.display = 'none';
             }
