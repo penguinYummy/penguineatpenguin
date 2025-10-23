@@ -41,6 +41,20 @@
         .btn-primary:hover {
             background-color: #3182ce;
         }
+        /* 메인으로 돌아가기 버튼 전용 스타일 */
+        .btn-menu-return {
+            background-color: #6B7280; /* Gray-500 */
+            margin-top: 1rem;
+        }
+        .btn-menu-return:hover {
+            background-color: #4B5563; /* Gray-700 */
+        }
+        /* 기존 quiz-view 내 메인 메뉴 버튼을 숨기기 위해 수정 */
+        #quiz-view .top-menu-btn {
+            background-color: #F87171; /* Red-400 */
+        }
+
+
         .input-group {
             display: flex;
             flex-direction: column;
@@ -136,7 +150,7 @@
                 <p class="text-xl">문제 <span id="current-question"></span> / <span id="total-questions"></span></p>
                 <p class="text-xl">맞춘 문제: <span id="correct-count"></span></p>
             </div>
-            <button class="btn text-sm px-4 py-2" onclick="showScreen('menu')">메인 메뉴로 돌아가기</button>
+            <button class="btn text-sm px-4 py-2 top-menu-btn" onclick="showScreen('menu')">메인 메뉴로 돌아가기</button> 
         </div>
         <h3 id="event-name" class="text-3xl font-bold mb-8"></h3>
         <div class="input-group mb-8 w-full max-w-sm mx-auto">
@@ -146,6 +160,8 @@
         <div id="quiz-actions" class="flex justify-center space-x-4">
             </div>
         <div id="result-message" class="hidden"></div>
+        
+        <button class="btn btn-menu-return w-full text-lg" onclick="showScreen('menu')">메인 메뉴로 돌아가기</button>
     </div>
 
     <div id="final-score-view" class="hidden text-center">
@@ -569,7 +585,7 @@
     document.getElementById('year-input').addEventListener('keypress', function(event) {
         if (event.key === 'Enter') {
             const currentEvent = state.questions[state.currentQuestionIndex];
-            if (currentEvent.month !== 0) {
+            if (currentEvent && currentEvent.month !== 0) { // currentEvent가 존재하는지 확인 추가
                 event.preventDefault();
                 document.getElementById('month-input').focus();
             } else {
