@@ -191,6 +191,7 @@
 
 <script>
     // 전역 변수 및 상태
+    // 사용자가 넣을 예정이므로 빈 배열로 남겨둡니다.
     const events = [
         { name: "회사령", year: 1910, month: 0 },
         { name: "범죄 즉결레", year: 1910, month: 0 },
@@ -306,6 +307,7 @@
         { name: "선거를 통한 통일 정부 수립을 담은 공동 성명서", year: 1948, month: 4 }
     ];
 
+
     let state = {
         screen: 'menu',
         questions: [],
@@ -337,8 +339,6 @@
         } else if (screenName === 'wrongAnswers') {
             renderWrongAnswers();
         } else if (screenName === 'quiz') {
-            // 초기 퀴즈 화면 진입 시에도 포커스 설정
-            // 다음 문제로 넘어가는 것은 renderQuestion에서 처리됩니다.
             document.getElementById('year-input').focus();
         }
     }
@@ -362,19 +362,23 @@
     // 검색 기능 로직이 추가되고, 초기화 오류가 수정된 renderTimeline 함수
     function renderTimeline(searchTerm = '') {
         const timelineList = document.getElementById('timeline-list');
+        // events 배열이 비어있을 경우 처리
+        if (events.length === 0) {
+            timelineList.innerHTML = `<p class="text-center text-red-400">🚨 이벤트 목록(events 배열)이 비어 있습니다. 코드를 확인해주세요.</p>`;
+            return;
+        }
+
         const normalizedSearchTerm = searchTerm.toLowerCase().trim();
         
         // 검색어에 따라 이벤트 필터링
-        let eventsToRender = events; // <<-- 이벤트 목록 초기화 수정 완료
+        let eventsToRender = events; 
 
         if (normalizedSearchTerm) {
             eventsToRender = events.filter(event => {
                 const eventName = event.name.toLowerCase();
                 const eventYear = String(event.year);
-                // 연도와 월을 조합한 날짜 형식도 검색 가능하도록 처리
                 const eventDate = event.month !== 0 ? `${event.year}.${event.month}` : `${event.year}`;
                 
-                // 이벤트 이름, 연도, 날짜(연도.월) 모두 검색
                 return eventName.includes(normalizedSearchTerm) || 
                        eventYear.includes(normalizedSearchTerm) ||
                        eventDate.includes(normalizedSearchTerm);
@@ -531,6 +535,7 @@
         const isAnswered = document.getElementById('next-question-btn');
 
         if (isAnswered) return;
+        if (!currentEvent) return; // 이벤트가 없으면 처리 중단
 
         const isCorrect = yearInput === currentEvent.year && (currentEvent.month === 0 || monthInput === currentEvent.month);
 
@@ -585,7 +590,7 @@
     document.getElementById('year-input').addEventListener('keypress', function(event) {
         if (event.key === 'Enter') {
             const currentEvent = state.questions[state.currentQuestionIndex];
-            if (currentEvent && currentEvent.month !== 0) { // currentEvent가 존재하는지 확인 추가
+            if (currentEvent && currentEvent.month !== 0) { 
                 event.preventDefault();
                 document.getElementById('month-input').focus();
             } else {
