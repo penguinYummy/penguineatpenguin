@@ -18,7 +18,7 @@ const clearBtn = document.getElementById('clear-messages-btn');
  * 닉네임을 Firebase에 등록하고 채팅방에 입장시키는 핵심 함수
  */
 function registerNickname(nickname) {
-    // 닉네임 중복 검사 로직
+    
     window.activeNicknamesRef.once('value', (snapshot) => {
         const usedNicknames = snapshot.val();
         let isDuplicate = false;
@@ -84,7 +84,6 @@ window.handleChatDisconnection = () => {
         window.currentUserRef = null;
         window.userNickname = '';
     }
-    // 화면을 메인으로 전환할 때 Local Storage는 유지
 };
 
 
