@@ -1,1 +1,29 @@
 
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+}
+
+.button-container {
+    margin-top: 30px;
+}
+
+/* <a> 태그와 <button> 태그 모두에 적용할 수 있는 기본 스타일 */
+.feature-button, button {
+    display: inline-block;
+    padding: 15px 30px;
+    margin: 10px;
+    font-size: 18px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none; /* <a> 태그의 밑줄 제거 */
+    color: white;
+    background-color: #007bff; /* 파란색 배경 */
+    transition: background-color 0.3s;
+}
+
+.feature-button:hover, button:hover {
+    background-color: #0056b3;
+}
