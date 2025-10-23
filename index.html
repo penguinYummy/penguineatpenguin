@@ -1,1 +1,26 @@
 
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Charger Tomato Penguin</title>
+    <link rel="stylesheet" href="style.css"> </head>
+<body>
+    <h1>환영합니다! 기능을 선택하세요.</h1>
+    
+    <div class="button-container">
+        <a href="feature1.html" class="feature-button">기능 1 바로가기</a>
+        
+        <button onclick="goToFeature2()">기능 2 실행</button>
+    </div>
+    
+    <script>
+        // JavaScript 함수: 버튼 클릭 시 페이지 이동
+        function goToFeature2() {
+            // location.href 속성을 이용해 원하는 HTML 파일 경로로 이동합니다.
+            window.location.href = 'feature2.html'; 
+        }
+    </script>
+</body>
+</html>
