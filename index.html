@@ -1,28 +1,180 @@
-
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>Charger Tomato Penguin</title>
-    <link rel="stylesheet" href="style.css"> </head>
-<body>
-    <h1>환영합니다! 기능을 선택하세요.</h1>
-    
-    <div class="button-container">
-        <a href="timer.html" class="feature-button">기능 1 바로가기</a>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charger Tomato Penguin - 인증 및 기능 선택</title>
+    <style>
+        /* 기존 스타일과 Firebase 인증 스타일을 통합 */
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f8f8f8; text-align: center; }
+        .container { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); }
+        h1 { color: #2c3e50; margin-bottom: 25px; }
         
-        <button onclick="goToFeature2()">기능 2 실행</button>
+        /* 인증 상태 표시 */
+        #userStatus { font-weight: bold; margin-bottom: 15px; padding: 10px; background: #ecf0f1; border-radius: 6px; }
+
+        /* 인증 폼 스타일 */
+        input[type="email"], input[type="password"] { width: 90%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        .auth-buttons button { width: 48%; padding: 10px; margin-top: 10px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        #signupBtn { background-color: #2ecc71; color: white; }
+        #loginBtn { background-color: #3498db; color: white; }
+        #logoutBtn { background-color: #e74c3c; color: white; margin-top: 15px; }
+
+        /* 기능 버튼 컨테이너 (로그인 시 표시) */
+        .button-container { margin-top: 30px; }
+        .feature-button {
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 10px;
+            background-color: #f39c12; /* 기능1 타이머 */
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        .feature-button:hover { background-color: #e67e22; }
+
+        .feature-execute-button {
+            padding: 15px 30px;
+            margin: 10px;
+            background-color: #9b59b6; /* 기능2 퀴즈 */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .feature-execute-button:hover { background-color: #8e44ad; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>환영합니다! 기능을 선택하세요.</h1>
+
+        <div id="userStatus">인증 상태 확인 중...</div>
+
+        <div id="authSection" class="auth-section" style="display: none;">
+            <h3>로그인이 필요합니다</h3>
+            <input type="email" id="emailInput" placeholder="이메일">
+            <input type="password" id="passwordInput" placeholder="비밀번호">
+            <div class="auth-buttons">
+                <button id="loginBtn">로그인</button>
+                <button id="signupBtn">회원가입</button>
+            </div>
+        </div>
+
+        <div id="dashboardSection" style="display: none;">
+            
+            <div class="button-container">
+                <a href="timer.html" class="feature-button">기능 1 (순공 시간 타이머)</a>
+                
+                <button onclick="goToFeature2()" class="feature-execute-button">기능 2 (History Quiz) 실행</button>
+            </div>
+            
+            <button id="logoutBtn">로그아웃</button>
+        </div>
     </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     
     <script>
-        // JavaScript 함수: 버튼 클릭 시 페이지 이동
+        // ************************************************
+        // 🚨 1. YOUR_... 값들을 반드시 자신의 Firebase 설정으로 변경하세요! 🚨
+        // ************************************************
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Firebase 앱 초기화 (Compat 버전)
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        
+        // --- DOM 요소 ---
+        const emailInput = document.getElementById('emailInput');
+        const passwordInput = document.getElementById('passwordInput');
+        const signupBtn = document.getElementById('signupBtn');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const userStatus = document.getElementById('userStatus');
+        const authSection = document.getElementById('authSection');
+        const dashboardSection = document.getElementById('dashboardSection');
+
+        // --- 기능 2 이동 함수 ---
         function goToFeature2() {
-            // location.href 속성을 이용해 원하는 HTML 파일 경로로 이동합니다.
             window.location.href = 'history quiz.html'; 
         }
+
+        // --- 인증 상태 변경 감지 및 UI 업데이트 ---
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // 로그인됨: 기능 선택 영역 표시
+                userStatus.textContent = `🟢 환영합니다, ${user.email}님!`;
+                authSection.style.display = 'none';
+                dashboardSection.style.display = 'block';
+            } else {
+                // 로그아웃됨: 로그인/회원가입 영역 표시
+                userStatus.textContent = '🔴 로그인을 해주세요.';
+                authSection.style.display = 'block';
+                dashboardSection.style.display = 'none';
+            }
+        });
+
+        // --- 1. 회원가입 핸들러 ---
+        signupBtn.addEventListener('click', () => {
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            
+            if (password.length < 6) {
+                alert("비밀번호는 6자리 이상이어야 합니다.");
+                return;
+            }
+
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    alert("회원가입 및 로그인 성공!");
+                })
+                .catch((error) => {
+                    console.error("회원가입 오류:", error.code, error.message);
+                    alert(`회원가입 실패: ${error.message}`);
+                });
+        });
+
+        // --- 2. 로그인 핸들러 ---
+        loginBtn.addEventListener('click', () => {
+            const email = emailInput.value;
+            const password = passwordInput.value;
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    alert("로그인 성공!");
+                })
+                .catch((error) => {
+                    console.error("로그인 오류:", error.code, error.message);
+                    alert(`로그인 실패: ${error.message}`);
+                });
+        });
+
+        // --- 3. 로그아웃 핸들러 ---
+        logoutBtn.addEventListener('click', () => {
+            auth.signOut()
+                .then(() => {
+                    alert("로그아웃되었습니다.");
+                })
+                .catch((error) => {
+                    console.error("로그아웃 오류:", error);
+                });
+        });
     </script>
 </body>
 </html>
-
-
