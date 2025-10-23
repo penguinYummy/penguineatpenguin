@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>순공 시간 타이머 (개선)</title>
+    <title>타이머</title>
     
     <style>
         /* --- 기본 및 전역 스타일 --- */
@@ -162,7 +162,7 @@
 </head>
 <body>
     
-    <h1>✏️ 순공 시간 측정기</h1>
+    <h1>순공 시간 측정기</h1>
     
     <div class="timer-app-container">
         
@@ -385,7 +385,6 @@
             runningControls.style.display = 'none';
             timerDisplay.textContent = '00:00:00.00';
             
-            alert(`세션이 종료되었습니다. 순공 시간: ${formatSimpleTime(sessionRecord.studyTime)}`);
         }
         
         // --- 페이지 가시성 제어 ---
