@@ -2,61 +2,65 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>Charger Tomato Penguin - 멀티 기능 앱</title>
-    
-    <link rel="stylesheet" href="style.css"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>타이머 & 채팅 멀티 앱 (5파일 분할)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>멀티 기능 애플리케이션</h1>
 
-    <div id="main-screen" class="screen">
-        <h2>사용할 기능을 선택하세요</h2>
-        <button id="go-to-chat-btn">실시간 채팅 시작</button>
-        <button id="go-to-timer-btn">활성 타이머 테스트</button>
+<div id="app" class="container">
+
+    <div id="main-menu" class="text-center">
+        <h1 class="text-4xl font-bold mb-8">멀티 앱 메뉴</h1>
+        <div class="space-y-4">
+            <button class="btn btn-green w-full text-xl" onclick="showScreen('timer-view')">
+                ⏱️ 타이머 실행
+            </button>
+            <button class="btn btn-primary w-full text-xl" onclick="showScreen('chat-view')">
+                💬 실시간 채팅
+            </button>
+        </div>
     </div>
 
-    <div id="chat-screen" class="screen hidden">
-        <button class="back-to-main-btn">메인으로 돌아가기</button>
+    <div id="timer-view" class="hidden text-center">
+        <h2 class="text-3xl font-bold mb-8" id="timer-title">스톱워치 타이머</h2> 
+        <div id="timer-display" class="text-7xl font-mono mb-8">00:00.00</div>
         
-        <div id="nickname-area">
-            <h2>채팅방에 오신 것을 환영합니다!</h2>
-            <form id="nickname-input-form">
-                <input type="text" id="nickname-input" placeholder="사용할 닉네임을 입력하세요" required maxlength="10" autocomplete="off">
-                <button type="submit">입장</button>
-            </form>
+        <div class="flex justify-center space-x-4 mb-8">
+            <button id="start-btn" class="btn btn-green text-xl" onclick="Timer.start()">시작</button>
+            <button id="stop-btn" class="btn btn-red text-xl hidden" onclick="Timer.stop()">정지</button>
+            <button id="reset-btn" class="btn btn-secondary text-xl" onclick="Timer.reset()">초기화</button>
         </div>
-        
-        <div id="chat-app" class="hidden">
-            <p>현재 닉네임: <span id="current-nickname" style="font-weight: bold; color: #dc3545;"></span></p>
-            
-            <div id="messages">
-                </div>
 
-            <div id="controls">
-                <form id="message-form">
-                    <input type="text" id="message-input" placeholder="메시지를 입력하세요" required autocomplete="off">
-                    <button type="submit">전송</button>
-                </form>
-                <button id="clear-messages-btn" title="주의: 모든 메시지가 영구적으로 삭제됩니다.">초기화</button>
+        <button class="btn btn-secondary" onclick="showScreen('main-menu')">
+            메인 메뉴로 돌아가기
+        </button>
+    </div>
+
+    <div id="chat-view" class="hidden">
+        <h2 class="text-3xl font-bold mb-4 text-center">실시간 채팅</h2>
+        
+        <div id="chat-box" class="h-64 bg-gray-700 p-3 rounded-lg overflow-y-auto mb-4 space-y-2">
             </div>
-        </div>
-    </div>
 
-    <div id="timer-screen" class="screen hidden">
-        <button class="back-to-main-btn">메인으로 돌아가기</button>
-        <h2>페이지 활성 타이머</h2>
-        <p>이 타이머는 **이 브라우저 탭이 활성화(화면에 보일)된 상태**일 때만 시간이 증가합니다.</p>
-        
-        <div id="timer-display">
-            <span id="elapsed-time">00:00:00</span>
+        <div class="flex space-x-2">
+            <input type="text" id="username-input" placeholder="이름" class="input-box w-20"> 
+            <input type="text" id="message-input" placeholder="메시지를 입력하세요..." class="input-box flex-grow" onkeypress="if(event.key === 'Enter') Chat.sendMessage()">
+            <button class="btn btn-primary" onclick="Chat.sendMessage()">보내기</button>
         </div>
 
-        <p id="timer-status">현재 상태: **비활성**</p>
+        <button class="btn btn-secondary mt-4 w-full" onclick="showScreen('main-menu')">
+            메인 메뉴로 돌아가기
+        </button>
     </div>
 
+</div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<script src="config.js"></script>
+<script src="timer.js"></script>
+<script src="chat.js"></script>
+<script src="main.js"></script>
 
-    <script src="config.js"></script> <script src="chat.js"></script>    <script src="timer.js"></script>   <script src="app.js"></script>     </body>
+</body>
 </html>
