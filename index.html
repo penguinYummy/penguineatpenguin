@@ -55,24 +55,24 @@
         .feature-execute-button, 
         #logoutBtn {
             border: none;
-            border-radius: 8px; /* 통일된 둥근 모서리 */
+            border-radius: 6px; 
             cursor: pointer;
             font-weight: bold;
-            transition: all 0.2s ease-in-out; /* 부드러운 전환 효과 */
-            padding: 12px;
+            transition: all 0.2s ease-in-out; 
+            padding: 10px; /* 인증 버튼에 맞게 기본 패딩 설정 */
             
-            /* 기본 3D 스타일 */
+            /* 기본 3D 스타일을 위한 설정 */
             transform: scale(1);
             position: relative;
         }
         
-        /* 마우스 호버 시 확대 및 그림자 제거 */
+        /* 마우스 호버 시 확대 및 그림자 변화 */
         .auth-buttons button:hover, 
         .feature-button:hover, 
         .feature-execute-button:hover, 
         #logoutBtn:hover {
             transform: scale(1.03); /* 3% 확대 */
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* 호버 시 그림자를 더 부드럽게 */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); 
         }
 
         /* 클릭(Active) 시 눌리는 효과 */
@@ -80,11 +80,11 @@
         .feature-button:active, 
         .feature-execute-button:active, 
         #logoutBtn:active {
-            transform: scale(1); /* 원래 크기로 복귀 */
-            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2); /* 3D 그림자 줄이기 */
-            top: 2px; /* 버튼이 살짝 눌리는 느낌 */
+            transform: scale(1); 
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2); /* 그림자 줄여 눌린 느낌 */
+            top: 3px; /* 버튼이 아래로 살짝 내려가는 느낌 */
         }
-        
+
         /* --- 인증 버튼 그룹 --- */
         .auth-buttons {
             display: flex; 
@@ -93,40 +93,47 @@
         }
         .auth-buttons button { 
             width: 48%; 
-            padding: 10px; 
-            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2); /* 3D 그림자 */
+            /* 3D 그림자 */
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2); 
+            top: 0; /* 초기 위치 */
         }
         #signupBtn { 
             background-color: #27ae60; 
             color: white; 
+            box-shadow: 0 4px 0 #208e4d; 
         }
         #loginBtn { 
             background-color: #2980b9; 
             color: white; 
+            box-shadow: 0 4px 0 #206d9a; 
         }
 
         /* --- 기능 버튼 컨테이너 (로그인 후 대시보드) --- */
         .button-container { margin-top: 30px; display: flex; flex-direction: column; gap: 15px; }
 
-        /* 기능 1 (타이머) */
+        /* 기능 1 (타이머) - 크기 통일을 위해 display: block 및 padding 재설정 */
         .feature-button {
             display: block;
             width: 100%;
+            padding: 15px; /* 기능 버튼 패딩 조정 */
             background-color: #f39c12; 
             color: white;
             text-decoration: none;
             font-size: 1.1em;
-            box-shadow: 0 5px 0 #e67e22; /* 3D 그림자 */
+            box-shadow: 0 5px 0 #e67e22; 
+            top: 0; /* 초기 위치 */
         }
 
-        /* 기능 2 (퀴즈) */
+        /* 기능 2 (퀴즈) - 크기 통일을 위해 padding 재설정 */
         .feature-execute-button {
             display: block;
             width: 100%;
+            padding: 15px; /* 기능 버튼 패딩 조정 */
             background-color: #8e44ad; 
             color: white;
             font-size: 1.1em;
-            box-shadow: 0 5px 0 #9b59b6; /* 3D 그림자 */
+            box-shadow: 0 5px 0 #9b59b6; 
+            top: 0; /* 초기 위치 */
         }
         
         /* 로그아웃 버튼 */
@@ -135,7 +142,9 @@
             color: white; 
             margin-top: 30px; 
             width: 100%;
-            box-shadow: 0 4px 0 #a03126; /* 3D 그림자 */
+            padding: 10px;
+            box-shadow: 0 4px 0 #a03126; 
+            top: 0; /* 초기 위치 */
         }
     </style>
 </head>
