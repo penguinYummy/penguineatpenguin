@@ -1,87 +1,198 @@
-// 타이머 관련 변수
-let startTime; // 타이머가 시작된 실제 시간
-let elapsedTime = 0; // 누적된 경과 시간 (밀리초)
-let timerInterval; // setInterval의 ID
-let isRunning = false; // 타이머 실행 상태
-
-// DOM 요소
-const timerDisplay = document.getElementById('timer-display');
-const startButton = document.getElementById('start-button');
-const stopButton = document.getElementById('stop-button');
-
-// 초를 시:분:초 형식으로 포맷팅
-function formatTime(ms) {
-    const totalSeconds = Math.floor(ms / 1000);
-    const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
-    const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
-    const seconds = String(totalSeconds % 60).padStart(2, '0');
-    return `${hours}:${minutes}:${seconds}`;
-}
-
-// 타이머 업데이트
-function updateTimer() {
-    // 현재 시간에서 시작 시간을 빼서 경과 시간을 계산하고 누적된 시간을 더합니다.
-    const currentTime = Date.now();
-    elapsedTime += currentTime - startTime;
-    startTime = currentTime; // 시작 시간 갱신
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>타이머 기능</title>
     
-    timerDisplay.textContent = formatTime(elapsedTime);
-}
-
-// 타이머 시작
-function startTimer() {
-    if (isRunning) return;
-
-    isRunning = true;
-    startButton.disabled = true;
-    stopButton.disabled = false;
-    
-    // 타이머 시작 시간 기록 (페이지가 켜져있을 때만 시간이 흐르도록)
-    startTime = Date.now(); 
-    timerInterval = setInterval(updateTimer, 1000); // 1초마다 업데이트
-}
-
-// 타이머 정지 (페이지 이탈/수동 정지 시 사용)
-function stopTimer() {
-    if (!isRunning) return;
-
-    isRunning = false;
-    clearInterval(timerInterval);
-    startButton.disabled = false;
-    stopButton.disabled = true;
-}
-
-// ------------------------------------------------------------------
-// 핵심 기능: 페이지 가시성 상태에 따라 타이머 제어 (Page Visibility API)
-// ------------------------------------------------------------------
-
-function handleVisibilityChange() {
-    // document.hidden: 문서가 숨겨져 있으면 true (다른 탭, 최소화 등)
-    if (document.hidden) {
-        // 탭이 비활성화되면, 타이머가 실행 중인 상태일 경우 정지합니다.
-        if (isRunning) {
-            console.log("페이지 비활성화: 타이머 멈춤");
-            // isRunning 상태는 유지하고 인터벌만 멈춥니다.
-            clearInterval(timerInterval);
+    <style>
+        /* 기본 레이아웃 스타일 */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            padding: 40px 20px;
+            background-color: #f4f7f6; /* 부드러운 배경색 */
+            color: #333;
         }
-    } else {
-        // 탭이 다시 활성화되면, 타이머가 실행 중인 상태일 경우 다시 시작합니다.
-        if (isRunning) {
-            console.log("페이지 활성화: 타이머 다시 시작");
-            // 새로운 시작 시간으로 설정하여 정지된 시간만큼 건너뛰는 것을 방지
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 40px;
+        }
+
+        /* 타이머 표시 영역 */
+        #timer-display {
+            font-size: 5em;
+            margin: 50px auto;
+            font-family: monospace; 
+            color: #2c3e50;
+            letter-spacing: 3px; 
+            background-color: #ffffff; 
+            padding: 20px 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            min-width: 300px; /* 최소 너비 설정 */
+        }
+
+        /* 버튼 기본 스타일 */
+        button {
+            padding: 12px 25px;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin: 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 시작 버튼 */
+        #start-button {
+            background-color: #2ecc71; /* 에메랄드 그린 */
+            color: white;
+        }
+        #start-button:hover:not(:disabled) {
+            background-color: #27ae60;
+            transform: translateY(-2px);
+        }
+
+        /* 정지 버튼 */
+        #stop-button {
+            background-color: #e74c3c; /* 붉은색 */
+            color: white;
+        }
+        #stop-button:hover:not(:disabled) {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        /* 비활성화된 버튼 */
+        button:disabled {
+            background-color: #bdc3c7;
+            color: #7f8c8d;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* 메인으로 돌아가기 링크 */
+        .back-link {
+            margin-top: 50px;
+        }
+        .back-link a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.1em;
+        }
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    
+    <h1>타이머</h1>
+    
+    <div id="timer-display">00:00:00</div>
+    
+    <div>
+        <button id="start-button">시작</button>
+        <button id="stop-button" disabled>정지</button>
+    </div>
+    
+    <div class="back-link">
+        <a href="index.html">메인 화면으로 돌아가기</a>
+    </div>
+
+    <script>
+        // 타이머 상태 관리 변수
+        let startTime = 0;      // setInterval이 시작된 시각
+        let elapsedTime = 0;    // 누적된 경과 시간 (밀리초)
+        let timerInterval = null; // setInterval ID
+        let isRunning = false;  // 타이머가 명시적으로 실행 중인 상태인지
+
+        // DOM 요소 가져오기
+        const timerDisplay = document.getElementById('timer-display');
+        const startButton = document.getElementById('start-button');
+        const stopButton = document.getElementById('stop-button');
+
+        // 시간을 시:분:초 형식으로 포맷팅하는 함수
+        function formatTime(ms) {
+            const totalSeconds = Math.floor(ms / 1000);
+            const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+            const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+            const seconds = String(totalSeconds % 60).padStart(2, '0');
+            return `${hours}:${minutes}:${seconds}`;
+        }
+
+        // 타이머 시간 업데이트 함수 (1초마다 호출)
+        function updateTimer() {
+            const currentTime = Date.now();
+            elapsedTime += currentTime - startTime;
+            startTime = currentTime; // 다음 인터벌을 위해 시작 시간을 갱신
+            
+            timerDisplay.textContent = formatTime(elapsedTime);
+        }
+
+        // 타이머 시작 함수
+        function startTimer() {
+            if (isRunning) return;
+
+            isRunning = true;
+            startButton.disabled = true;
+            stopButton.disabled = false;
+            
             startTime = Date.now(); 
-            timerInterval = setInterval(updateTimer, 1000);
+            timerInterval = setInterval(updateTimer, 1000); 
         }
-    }
-}
 
-// ------------------------------------------------------------------
-// 이벤트 리스너 등록
-// ------------------------------------------------------------------
+        // 타이머 정지 함수 (manualStop이 true면 수동 정지, false면 페이지 이탈 정지)
+        function stopTimer(manualStop = false) {
+            if (!isRunning) return;
 
-// 1. 시작/정지 버튼 이벤트
-startButton.addEventListener('click', startTimer);
-stopButton.addEventListener('click', stopTimer);
+            clearInterval(timerInterval);
+            
+            // 수동 정지일 경우에만 상태와 버튼을 리셋
+            if (manualStop) {
+                isRunning = false;
+                startButton.disabled = false;
+                stopButton.disabled = true;
+            }
+            // 수동 정지가 아니면 (페이지 이탈 시) isRunning 상태를 유지하여 복귀 시 재시작 준비
+        }
 
-// 2. 페이지 가시성 이벤트 (핵심)
-document.addEventListener('visibilitychange', handleVisibilityChange);
+        // ------------------------------------------------------------------
+        // 핵심 로직: 페이지 가시성 변경 시 타이머 제어 (다른 창으로 나가면 멈춤)
+        // ------------------------------------------------------------------
+        function handleVisibilityChange() {
+            // document.hidden이 true: 페이지가 비활성화(다른 탭, 최소화)됨
+            if (document.hidden) {
+                if (isRunning) {
+                    stopTimer(false); // 실행 중이었다면 멈춤
+                }
+            } 
+            // document.hidden이 false: 페이지가 다시 활성화됨
+            else {
+                if (isRunning) {
+                    startTime = Date.now(); // 멈춰있던 시간만큼은 건너뛰고
+                    timerInterval = setInterval(updateTimer, 1000); // 다시 시작
+                }
+            }
+        }
+
+        // ------------------------------------------------------------------
+        // 이벤트 리스너 등록
+        // ------------------------------------------------------------------
+        
+        startButton.addEventListener('click', startTimer);
+        // 정지 버튼 클릭 시는 수동 정지(true)로 호출하여 isRunning 상태를 해제합니다.
+        stopButton.addEventListener('click', () => stopTimer(true)); 
+
+        // 페이지 가시성 변경 이벤트 리스너 등록
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+    </script>
+</body>
+</html>
