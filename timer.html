@@ -26,7 +26,7 @@
             margin-bottom: 20px;
         }
 
-        /* --- 주요 컨테이너 레이아웃 --- */
+        /* --- 주요 컨테이너 레이아웃: 높이 확보 --- */
         .timer-app-container {
             display: flex;
             width: 90%;
@@ -36,6 +36,7 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             margin-top: 20px;
+            height: 70vh; /* 컨테이너 높이를 화면의 70%로 고정하여 기록 영역에 충분한 공간 제공 */
         }
 
         /* --- 기록 바 섹션 (좌측) --- */
@@ -45,9 +46,10 @@
             padding: 20px;
             border-right: 1px solid #ddd;
             overflow-y: auto; 
-            max-height: 500px; 
+            height: 100%; /* 부모 컨테이너 높이(70vh)를 따르도록 설정 */
+            /* max-height: 500px; 기존 코드는 주석 처리 또는 삭제됨 */
             text-align: left;
-            /* '전체 기록 초기화' 버튼 제거로 인한 flex-end 제거 */
+            box-sizing: border-box; /* 패딩이 높이에 포함되도록 */
         }
         
         .record-header {
@@ -169,7 +171,7 @@
         .detail-time { color: #3498db; font-family: monospace; }
         .detail-pause { color: #e74c3c; font-family: monospace; }
         
-        /* --- 변경된 메인으로 돌아가기 버튼 및 시계 스타일 --- */
+        /* --- 변경된 메인으로 돌아가기 버튼 스타일 --- */
         #footer-controls {
             position: fixed;
             bottom: 20px;
@@ -178,17 +180,10 @@
             align-items: center;
             gap: 10px;
             z-index: 5;
+            /* 실시간 시계 삭제로 인해 flex-end 조정 */
+            justify-content: flex-end; 
         }
-
-        #current-clock-display {
-            font-size: 1em;
-            font-weight: 600;
-            color: #555;
-            padding: 8px 12px;
-            background-color: #ecf0f1;
-            border-radius: 6px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-        }
+        /* 실시간 시계 관련 스타일 제거됨 */
 
         .back-to-main-button {
             padding: 8px 15px;
@@ -224,7 +219,7 @@
             <div id="records-list">
                 <p style="padding: 10px; font-size: 0.9em; color: #7f8c8d;">'세션 종료' 시 여기에 기록됩니다.</p>
             </div>
-            </div>
+        </div>
         
         <div class="main-timer-section">
             <div id="total-study-display">총 공부 시간: 00:00:00</div>
@@ -253,7 +248,6 @@
     </div>
     
     <div id="footer-controls">
-        <div id="current-clock-display">00:00:00</div>
         <a href="index.html" class="back-to-main-button">메인으로</a>
     </div>
 
@@ -286,8 +280,7 @@
         const finishButton = document.getElementById('finish-session-button');
         const recordsList = document.getElementById('records-list');
         const runningControls = document.getElementById('running-controls');
-        // const clearAllDataButton = document.getElementById('clear-all-data-button'); // 제거됨
-        const currentClockDisplay = document.getElementById('current-clock-display'); // 추가됨
+        // const currentClockDisplay = document.getElementById('current-clock-display'); // 삭제됨
         
         // Modal DOM
         const modal = document.getElementById('detail-modal');
@@ -336,7 +329,6 @@
          * 세션 기록을 Local Storage에 저장합니다.
          */
         function saveLogs() {
-            // Date 객체는 JSON으로 저장될 때 문자열로 변환됨
             // completedSessions 배열의 Date 객체를 ISO 문자열로 변환하여 저장
             const serializableSessions = completedSessions.map(log => ({
                 ...log,
@@ -347,39 +339,6 @@
             localStorage.setItem(STORAGE_KEY_LOGS, JSON.stringify(serializableSessions));
             renderRecords();
         }
-        
-        /*
-         * clearAllData 함수는 요청에 따라 제거되었지만,
-         * 개발 편의를 위해 여기에 주석으로 남겨둡니다. 
-         * function clearAllData() {
-            if (!confirm('경고: 총 공부 시간과 세션 기록이 모두 삭제됩니다. 정말 초기화하시겠습니까?')) {
-                return;
-            }
-
-            localStorage.removeItem(STORAGE_KEY_TOTAL);
-            localStorage.removeItem(STORAGE_KEY_LOGS);
-            
-            totalElapsedTime = 0;
-            completedSessions = [];
-            
-            if (isRunning) {
-                clearInterval(currentInterval);
-            }
-            isRunning = false;
-            isPaused = false;
-            sessionStartTime = null;
-            currentSessionStudyTime = 0;
-            currentSectionTime = 0;
-            
-            startButton.style.display = 'block';
-            runningControls.style.display = 'none';
-            timerDisplay.textContent = '00:00:00.00';
-            
-            updateTotalDisplay();
-            renderRecords(true);
-            alert('모든 기록이 초기화되었습니다.');
-        }
-        */
 
         // ==========================================================
         // 시간 포맷팅 및 디스플레이 함수
@@ -411,13 +370,7 @@
              totalStudyDisplay.textContent = `총 공부 시간: ${formatSimpleTime(totalElapsedTime)}`;
         }
         
-        /**
-         * 현재 시각을 표시합니다. (추가된 기능)
-         */
-        function updateClockDisplay() {
-            const now = new Date();
-            currentClockDisplay.textContent = formatClockTime(now);
-        }
+        // updateClockDisplay 함수 제거됨
 
         /**
          * 좌측 세션 기록 목록을 렌더링합니다. (페이지 로드 또는 세션 저장 시 사용)
@@ -593,7 +546,7 @@
                 }
             } else {
                 // 탭 재활성화 시 (정지 상태일 때만 재개)
-                // if (isPaused) { // 여기서는 자동 재개 대신 사용자가 버튼을 누르도록 유도
+                // if (isPaused) { 
                 //    togglePauseResume('화면 전환'); 
                 // }
             }
@@ -641,16 +594,13 @@
         startButton.addEventListener('click', startSession);
         pauseResumeButton.addEventListener('click', () => { togglePauseResume('사용자'); });
         finishButton.addEventListener('click', endSession);
-        // clearAllDataButton.addEventListener('click', clearAllData); // 제거
         
         document.addEventListener('visibilitychange', handleVisibilityChange);
         
-        // --- 초기 로드 및 시계 시작 ---
+        // --- 초기 로드 ---
         loadData();
         
-        // 1초마다 시계 업데이트 시작 (추가된 기능)
-        updateClockDisplay();
-        setInterval(updateClockDisplay, 1000);
+        // 실시간 시계 관련 코드 제거됨
     </script>
 </body>
 </html>
