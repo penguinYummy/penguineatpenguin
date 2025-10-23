@@ -4,24 +4,8 @@
     <meta charset="UTF-8">
     <title>Charger Tomato Penguin</title>
     
-    <style>
-        /* (스타일 시트 코드는 이전과 동일하므로 생략) */
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f7f6; }
-        h1 { color: #333; text-align: center; }
-        #nickname-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60vh; background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); max-width: 400px; margin: 0 auto; }
-        #nickname-input-form input, #nickname-input-form button { padding: 10px; margin-top: 10px; border-radius: 4px; border: 1px solid #ddd; }
-        #chat-app { display: none; max-width: 600px; margin: 20px auto; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); padding: 20px; }
-        #messages { height: 300px; overflow-y: auto; border: 1px solid #eee; padding: 15px; margin-bottom: 15px; background-color: #f9f9f9; border-radius: 4px; }
-        #messages p { margin: 5px 0; line-height: 1.5; word-wrap: break-word; }
-        .message-nickname { font-weight: bold; color: #007bff; margin-right: 5px; }
-        #controls { display: flex; gap: 10px; }
-        #message-form { display: flex; flex-grow: 1; }
-        #message-input { flex-grow: 1; padding: 10px; border-radius: 4px 0 0 4px; border: 1px solid #007bff; border-right: none; font-size: 14px; }
-        #message-form button { padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 0 4px 4px 0; cursor: pointer; font-size: 14px; transition: background-color 0.2s; }
-        #message-form button:hover { background-color: #0056b3; }
-        #clear-messages-btn { padding: 10px 15px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; transition: background-color 0.2s; }
-        #clear-messages-btn:hover { background-color: #c82333; }
-    </style>
+    <link rel="stylesheet" href="style.css"> 
+
 </head>
 <body>
 
@@ -51,160 +35,11 @@
         </div>
     </div>
 
+
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
-    <script>
-         const firebaseConfig = {
-    apiKey: "AIzaSyB_nt4nzPfp-trlT8QHNFPFpd-oKqfyWGo",
-    authDomain: "penguineatpenguin.firebaseapp.com",
-    projectId: "penguineatpenguin",
-    storageBucket: "penguineatpenguin.firebasestorage.app",
-    messagingSenderId: "757747390049",
-    appId: "1:757747390049:web:72bcdc12d5eb3bc1b97c20",
-    measurementId: "G-XCT650Z39X"
-  };
-        
-        firebase.initializeApp(firebaseConfig);
-        
-        // Firebase 참조
-        const messagesRef = firebase.database().ref('messages');
-        const activeNicknamesRef = firebase.database().ref('activeUserNicknames');
-        // 🚨 새로 추가된 참조 🚨
-        const chatStatusRef = firebase.database().ref('chatStatus'); 
-
-        // HTML 요소 선택 (이전과 동일)
-        const nicknameScreen = document.getElementById('nickname-screen');
-        const chatApp = document.getElementById('chat-app');
-        const nicknameInputForm = document.getElementById('nickname-input-form');
-        const nicknameInput = document.getElementById('nickname-input');
-        const currentNicknameDisplay = document.getElementById('current-nickname');
-        const messageForm = document.getElementById('message-form');
-        const messageInput = document.getElementById('message-input');
-        const messagesContainer = document.getElementById('messages');
-        const clearBtn = document.getElementById('clear-messages-btn');
-        
-        let userNickname = '';
-
-        /**
-         * 닉네임을 Firebase에 등록하고 채팅방에 입장시키는 핵심 함수
-         * (중복 검사, Local Storage 저장, onDisconnect 등록 포함)
-         */
-        function registerNickname(nickname) {
-            activeNicknamesRef.once('value', (snapshot) => {
-                const usedNicknames = snapshot.val();
-                let isDuplicate = false;
-
-                if (usedNicknames) {
-                    for (let id in usedNicknames) {
-                        if (usedNicknames[id] === nickname) {
-                            isDuplicate = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (isDuplicate) {
-                    alert(`"${nickname}" 닉네임은 이미 사용 중입니다. 다른 닉네임을 입력해 주세요.`);
-                    nicknameInput.value = '';
-                    nicknameInput.focus();
-                    
-                    // 중복된 닉네임으로 자동 로그인 시도를 막기 위해 Local Storage 데이터 삭제
-                    localStorage.removeItem('chatNickname'); 
-
-                } else {
-                    // 등록 성공
-                    userNickname = nickname;
-                    currentNicknameDisplay.textContent = userNickname;
-                    localStorage.setItem('chatNickname', nickname); 
-
-                    const userRef = activeNicknamesRef.push(nickname); 
-                    userRef.onDisconnect().remove(); 
-                    
-                    nicknameScreen.style.display = 'none';
-                    chatApp.style.display = 'block';
-                    messageInput.focus();
-                }
-            });
-        }
-
-
-        /* ---------- 닉네임 로드 및 자동 로그인 로직 ---------- */
-        const savedNickname = localStorage.getItem('chatNickname');
-
-        if (savedNickname) {
-            nicknameInput.value = savedNickname; 
-        }
-
-        nicknameInputForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const nickname = nicknameInput.value.trim();
-            
-            if (nickname) {
-                registerNickname(nickname);
-            }
-        });
-
-        /* ---------- 메시지 전송 로직 ---------- */
-        messageForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const messageText = messageInput.value.trim();
-            
-            if (messageText && userNickname) {
-                messagesRef.push({
-                    nickname: userNickname,
-                    text: messageText,
-                    timestamp: Date.now()
-                });
-                messageInput.value = '';
-            }
-        });
-
-        /* ---------- 실시간 메시지 수신 및 표시 로직 ---------- */
-        messagesRef.on('child_added', (snapshot) => {
-            const messageData = snapshot.val();
-            const messageElement = document.createElement('p');
-            
-            messageElement.innerHTML = `<span class="message-nickname">${messageData.nickname}:</span> ${messageData.text}`;
-            
-            messagesContainer.appendChild(messageElement);
-            
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        });
-
-        /* ---------- 메시지 전체 삭제 기능 (실시간 전파 로직 추가) ---------- */
-        clearBtn.addEventListener('click', () => {
-            const isConfirmed = confirm("경고! 채팅방의 모든 메시지를 정말로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.");
-            
-            if (isConfirmed) {
-                // 1. messages 경로의 데이터를 삭제
-                messagesRef.set(null)
-                    .then(() => {
-                        // 2. 🚨 채팅방 상태 업데이트: 모든 메시지가 삭제되었음을 알리는 타임스탬프 기록
-                        return chatStatusRef.set({ lastCleared: Date.now() }); 
-                    })
-                    .then(() => {
-                        alert("모든 채팅 메시지가 삭제되었습니다.");
-                        // 버튼을 누른 사용자의 화면은 즉시 비웁니다.
-                        messagesContainer.innerHTML = '';
-                    })
-                    .catch((error) => {
-                        console.error("데이터 삭제 실패:", error);
-                        alert("메시지 삭제에 실패했습니다.");
-                    });
-            }
-        });
-        
-        /* ---------- 🚨 새로 추가: 채팅방 상태 변경 감지 리스너 (실시간 초기화) ---------- */
-        chatStatusRef.on('value', (snapshot) => {
-            // chatStatus 데이터에 변화가 생기면 실행됩니다.
-            if (snapshot.exists()) {
-                // 메시지 컨테이너의 내용을 전부 비웁니다.
-                messagesContainer.innerHTML = '';
-            }
-        });
-    </script>
+    <script src="script.js"></script> 
 
 </body>
 </html>
-
