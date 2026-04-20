@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>히라가나 마스터</title>
+    <title>히라가나 마스터 Pro</title>
     <style>
         :root {
             --primary: #6c5ce7;
             --secondary: #a29bfe;
-            --bg: #f9f9fb;
+            --bg: #f0f2f5;
             --white: #ffffff;
             --text: #2d3436;
+            --accent: #ff7675;
         }
 
         body {
-            font-family: 'Pretendard', sans-serif;
+            font-family: 'Pretendard', -apple-system, sans-serif;
             background-color: var(--bg);
-            color: var(--text);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -24,66 +24,97 @@
             margin: 0;
         }
 
+        /* 전체 컨테이너 크기 확대 */
         .container {
             background: var(--white);
-            padding: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 400px;
+            padding: 3rem;
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 600px; /* 기존보다 넓게 설정 */
             text-align: center;
         }
 
-        h1 { font-size: 1.5rem; color: var(--primary); margin-bottom: 1.5rem; }
+        h1 { font-size: 2.2rem; color: var(--primary); margin-bottom: 2rem; }
 
-        .menu-buttons { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
+        .menu-buttons { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 15px; 
+            margin-bottom: 30px; 
+        }
         
         button {
-            padding: 8px 15px;
+            padding: 15px;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             background: var(--secondary);
             color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
             cursor: pointer;
-            transition: 0.3s;
+            transition: all 0.2s;
         }
 
-        button:hover { background: var(--primary); }
+        button:hover { 
+            background: var(--primary); 
+            transform: translateY(-2px);
+        }
 
-        .quiz-box { display: none; margin-top: 20px; }
+        .quiz-box { display: none; margin-top: 30px; border-top: 2px solid #eee; padding-top: 20px; }
         
+        /* 일본어 글자 크기 대폭 확대 */
         #char-display {
-            font-size: 5rem;
+            font-size: 8rem;
             font-weight: bold;
-            margin: 20px 0;
+            margin: 10px 0;
             color: var(--text);
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.05);
         }
 
         input[type="text"] {
-            width: 80%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-size: 1rem;
+            width: 90%;
+            padding: 18px;
+            border: 3px solid #eee;
+            border-radius: 15px;
+            font-size: 1.5rem;
             text-align: center;
             outline: none;
+            transition: 0.3s;
         }
 
-        input[type="text"]:focus { border-color: var(--primary); }
+        input[type="text"]:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(108, 92, 231, 0.2); }
 
-        #feedback { margin-top: 15px; font-weight: bold; height: 1.2rem; }
+        #feedback { 
+            margin-top: 20px; 
+            font-size: 1.3rem; 
+            font-weight: bold; 
+            min-height: 1.6rem; 
+        }
         .correct { color: #27ae60; }
         .wrong { color: #e74c3c; }
 
-        .score-board { margin-top: 10px; font-size: 0.9rem; color: #636e72; }
+        .info-text {
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: #999;
+        }
+        
+        .score-board { 
+            margin-top: 15px; 
+            font-size: 1.2rem; 
+            font-weight: bold;
+            color: var(--primary); 
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>히라가나 외우기 🇯🇵</h1>
+    <h1>히라가나 마스터 🇯🇵</h1>
     
     <div class="menu-buttons">
+        <button onclick="startQuiz('seion')">청음 (기본)</button>
         <button onclick="startQuiz('takuon')">탁음</button>
         <button onclick="startQuiz('hantakuon')">반탁음</button>
         <button onclick="startQuiz('youm')">요음</button>
@@ -91,22 +122,39 @@
 
     <div id="quiz-area" class="quiz-box">
         <div id="char-display">?</div>
-        <input type="text" id="answer-input" placeholder="한국어 발음 입력..." onkeyup="handleEnter(event)">
+        <input type="text" id="answer-input" placeholder="발음을 입력하세요" autocomplete="off">
         <div id="feedback"></div>
-        <div class="score-board">맞춘 개수: <span id="score">0</span></div>
+        <div class="score-board">Score: <span id="score">0</span></div>
+        <p class="info-text">💡 정답 입력 후 [Enter]나 [Space]를 누르면 다음 문제!</p>
     </div>
 </div>
 
 <script>
     const data = {
-        takuon: { "が": "가", "ぎ": "기", "ぐ": "구", "げ": "게", "ご": "고", "ざ": "자", "じ": "지", "ず": "즈", "ぜ": "제", "ぞ": "조", "だ": "다", "ぢ": "지", "づ": "즈", "で": "데", "ど": "도", "ば": "바", "び": "비", "ぶ": "부", "べ": "베", "ぼ": "보" },
+        seion: { 
+            "あ": "아", "い": "이", "う": "우", "え": "에", "お": "오",
+            "か": "카", "き": "키", "く": "쿠", "け": "케", "こ": "코",
+            "さ": "사", "し": "시", "す": "스", "せ": "세", "そ": "소",
+            "た": "타", "ち": "치", "つ": "츠", "て": "테", "と": "토",
+            "な": "나", "に": "니", "ぬ": "누", "ね": "네", "노": "노",
+            "は": "하", "ひ": "히", "ふ": "후", "へ": "헤", "ほ": "호",
+            "ま": "마", "み": "미", "む": "무", "め": "메", "も": "모",
+            "や": "야", "ゆ": "유", "よ": "요",
+            "ら": "라", "り": "리", "る": "루", "れ": "레", "ろ": "로",
+            "わ": "와", "を": "오", "ん": "응"
+        },
+        takuon: { "が": "가", "ぎ": "기", "ぐ": "구", "げ": "게", "ご": "고", "ざ": "자", "지": "지", "ず": "즈", "ぜ": "제", "ぞ": "조", "だ": "다", "ぢ": "지", "づ": "즈", "で": "데", "ど": "도", "ば": "바", "비": "비", "부": "부", "べ": "베", "ぼ": "보" },
         hantakuon: { "ぱ": "파", "ぴ": "피", "ぷ": "푸", "ぺ": "페", "ぽ": "포" },
-        youm: { "きゃ": "캬", "きゅ": "큐", "きょ": "쿄", "しゃ": "샤", "しゅ": "슈", "しょ": "쇼", "ちゃ": "챠", "ちゅ": "츄", "ちょ": "쵸", "にゃ": "냐", "にゅ": "뉴", "에": "뇨" }
+        youm: { "きゃ": "캬", "きゅ": "큐", "きょ": "쿄", "しゃ": "샤", "しゅ": "슈", "しょ": "쇼", "ちゃ": "챠", "ちゅ": "츄", "ちょ": "쵸", "にゃ": "냐", "にゅ": "뉴", "にょ": "뇨" }
     };
 
     let currentData = {};
     let currentKey = "";
     let score = 0;
+    let isCorrect = false;
+
+    const inputField = document.getElementById('answer-input');
+    const feedback = document.getElementById('feedback');
 
     function startQuiz(type) {
         currentData = data[type];
@@ -120,29 +168,40 @@
         const keys = Object.keys(currentData);
         currentKey = keys[Math.floor(Math.random() * keys.length)];
         document.getElementById('char-display').innerText = currentKey;
-        document.getElementById('answer-input').value = "";
-        document.getElementById('answer-input').focus();
+        inputField.value = "";
+        feedback.innerText = "";
+        isCorrect = false;
+        inputField.focus();
     }
 
-    function handleEnter(event) {
-        if (event.key === 'Enter') {
-            checkAnswer();
+    // 엔터 및 스페이스바 로직
+    inputField.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault(); // 스페이스바 공백 입력 방지
+            
+            if (isCorrect) {
+                // 이미 맞춘 상태에서 엔터/스페이스 누르면 다음 문제로
+                nextQuestion();
+            } else {
+                // 정답 체크
+                checkAnswer();
+            }
         }
-    }
+    });
 
     function checkAnswer() {
-        const input = document.getElementById('answer-input').value.trim();
-        const feedback = document.getElementById('feedback');
+        const input = inputField.value.trim();
         
         if (input === currentData[currentKey]) {
-            feedback.innerText = "O";
+            feedback.innerText = "정답입니다! (Enter/Space로 다음)";
             feedback.className = "correct";
-            score++;
+            if(!isCorrect) score++;
+            isCorrect = true;
             document.getElementById('score').innerText = score;
-            setTimeout(nextQuestion, 1000);
         } else {
-            feedback.innerText = ` X 정답은 [${currentData[currentKey]}]`;
+            feedback.innerText = `틀렸어요! 정답은 [${currentData[currentKey]}]`;
             feedback.className = "wrong";
+            isCorrect = false;
         }
     }
 </script>
