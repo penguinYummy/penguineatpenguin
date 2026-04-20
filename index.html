@@ -71,6 +71,9 @@
             font-weight: bold;
             color: var(--text);
             min-height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         input[type="text"] {
@@ -87,8 +90,9 @@
         #feedback {
             font-size: 1.4rem;
             font-weight: bold;
-            min-height: 1.6rem;
+            min-height: 2rem;
             margin-bottom: 20px;
+            display: block; /* 가시성 확보 */
         }
 
         .action-btn { background: var(--primary); width: 100%; margin-top: 10px; }
@@ -135,19 +139,19 @@
         seion: {
             "あ": "아", "い": "이", "う": "우", "え": "에", "お": "오",
             "か": "카", "き": "키", "く": "쿠", "け": "케", "こ": "코",
-            "사": "사", "し": "시", "す": "스", "せ": "세", "そ": "소",
+            "さ": "사", "し": "시", "す": "스", "せ": "세", "そ": "소",
             "た": "타", "ち": "치", "つ": "츠", "て": "테", "と": "토",
-            "な": "나", "に": "니", "ぬ": "누", "ね": "네", "の": "노",
+            "나": "나", "に": "니", "ぬ": "누", "ね": "네", "の": "노",
             "は": "하", "ひ": "히", "ふ": "후", "へ": "헤", "ほ": "호",
-            "ま": "마", "미": "미", "む": "무", "め": "메", "も": "모",
+            "ま": "마", "み": "미", "む": "무", "め": "메", "も": "모",
             "や": "야", "ゆ": "유", "よ": "요",
-            "ら": "라", "り": "리", "る": "루", "れ": "레", "ろ": "로",
+            "ら": "라", "리": "리", "る": "루", "れ": "레", "ろ": "로",
             "わ": "와", "を": "오", "ん": "응"
         },
         takuon: {
-            "が": "가", "ぎ": "기", "ぐ": "구", "げ": "게", "ご": "고",
+            "가": "가", "ぎ": "기", "ぐ": "구", "げ": "게", "ご": "고",
             "ざ": "자", "じ": "지", "ず": "즈", "ぜ": "제", "ぞ": "조",
-            "だ": "다", "ぢ": "지", "づ": "즈", "で": "데", "ど": "도",
+            "다": "다", "ぢ": "지", "づ": "즈", "で": "데", "ど": "도",
             "ば": "바", "비": "비", "ぶ": "부", "べ": "베", "ぼ": "보"
         },
         hantakuon: {
@@ -157,7 +161,7 @@
             "きゃ": "캬", "きゅ": "큐", "きょ": "쿄",
             "しゃ": "샤", "しゅ": "슈", "しょ": "쇼",
             "ちゃ": "챠", "ちゅ": "츄", "ちょ": "쵸",
-            "에": "냐", "にゅ": "뉴", "にょ": "뇨",
+            "にゃ": "냐", "にゅ": "뉴", "にょ": "뇨",
             "ひゃ": "햐", "ひゅ": "휴", "ひょ": "효",
             "みゃ": "먀", "みゅ": "뮤", "みょ": "묘",
             "りゃ": "랴", "りゅ": "류", "りょ": "료",
@@ -203,13 +207,19 @@
         const item = currentList[currentIndex];
         document.getElementById('char-display').innerText = item.q;
         document.getElementById('current-idx-display').innerText = currentIndex + 1;
+        
+        // 입력창 초기화 및 보이기
         inputField.value = "";
         inputField.style.display = "inline-block";
+        
+        // 피드백 및 다음 버튼 숨기기
         feedback.innerText = "";
         nextBtn.style.display = "none";
+        
         answered = false;
         
-        setTimeout(() => inputField.focus(), 10);
+        // 약간의 지연 후 포커스 (브라우저 버그 방지)
+        setTimeout(() => inputField.focus(), 50);
     }
 
     function checkAnswer() {
@@ -221,26 +231,27 @@
         const correct = currentList[currentIndex].a;
         answered = true;
 
+        // 입력창을 즉시 숨겨서 엔터 중복 입력을 막음
+        inputField.style.display = "none";
+
         if (input === correct) {
             feedback.innerText = "정답";
             feedback.style.color = "var(--success)";
             score++;
             document.getElementById('score').innerText = score;
-            
-            // 정답 시에도 다음 버튼을 보여주되, 텍스트로 안내
-            inputField.style.display = "none";
-            nextBtn.style.display = "block";
-            nextBtn.innerText = "정답";
+            nextBtn.innerText = "다음으로";
         } else {
-            feedback.innerText = `오답   정답 : [${correct}]`;
+            feedback.innerText = `오답 정답 : [${correct}]`;
             feedback.style.color = "var(--error)";
-            inputField.style.display = "none";
-            nextBtn.style.display = "block";
             nextBtn.innerText = "다음 문제 (Enter)";
         }
+        
+        // 다음 버튼 표시
+        nextBtn.style.display = "block";
     }
 
     function handleNext() {
+        if (!answered) return;
         currentIndex++;
         showQuestion();
     }
@@ -256,19 +267,19 @@
         document.getElementById('main-menu').style.display = 'block';
     }
 
-    // 입력창 엔터: 정답 체크
-    inputField.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            if (!answered) checkAnswer();
-        }
-    });
-
-    // 화면 전체 엔터: 다음 문제로 넘어가기 (결과 화면이 떠있을 때만 작동)
+    // 엔터 키 처리 로직 통합
     window.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && nextBtn.style.display === 'block') {
-            e.preventDefault();
-            handleNext();
+        if (e.key === 'Enter') {
+            // 퀴즈 화면이 아닐 때는 작동 안 함
+            if (document.getElementById('quiz-area').style.display !== 'block') return;
+
+            if (!answered) {
+                // 아직 답을 안 적었다면 정답 체크
+                checkAnswer();
+            } else {
+                // 이미 답을 체크해서 다음 버튼이 떠 있다면 다음으로 이동
+                handleNext();
+            }
         }
     });
 </script>
