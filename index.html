@@ -1,1 +1,151 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>히라가나 마스터</title>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --bg: #f9f9fb;
+            --white: #ffffff;
+            --text: #2d3436;
+        }
 
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 { font-size: 1.5rem; color: var(--primary); margin-bottom: 1.5rem; }
+
+        .menu-buttons { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
+        
+        button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
+            background: var(--secondary);
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover { background: var(--primary); }
+
+        .quiz-box { display: none; margin-top: 20px; }
+        
+        #char-display {
+            font-size: 5rem;
+            font-weight: bold;
+            margin: 20px 0;
+            color: var(--text);
+        }
+
+        input[type="text"] {
+            width: 80%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            text-align: center;
+            outline: none;
+        }
+
+        input[type="text"]:focus { border-color: var(--primary); }
+
+        #feedback { margin-top: 15px; font-weight: bold; height: 1.2rem; }
+        .correct { color: #27ae60; }
+        .wrong { color: #e74c3c; }
+
+        .score-board { margin-top: 10px; font-size: 0.9rem; color: #636e72; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>히라가나 외우기 🇯🇵</h1>
+    
+    <div class="menu-buttons">
+        <button onclick="startQuiz('takuon')">탁음</button>
+        <button onclick="startQuiz('hantakuon')">반탁음</button>
+        <button onclick="startQuiz('youm')">요음</button>
+    </div>
+
+    <div id="quiz-area" class="quiz-box">
+        <div id="char-display">?</div>
+        <input type="text" id="answer-input" placeholder="한국어 발음 입력..." onkeyup="handleEnter(event)">
+        <div id="feedback"></div>
+        <div class="score-board">맞춘 개수: <span id="score">0</span></div>
+    </div>
+</div>
+
+<script>
+    const data = {
+        takuon: { "が": "가", "ぎ": "기", "ぐ": "구", "げ": "게", "ご": "고", "ざ": "자", "じ": "지", "ず": "즈", "ぜ": "제", "ぞ": "조", "だ": "다", "ぢ": "지", "づ": "즈", "で": "데", "ど": "도", "ば": "바", "び": "비", "ぶ": "부", "べ": "베", "ぼ": "보" },
+        hantakuon: { "ぱ": "파", "ぴ": "피", "ぷ": "푸", "ぺ": "페", "ぽ": "포" },
+        youm: { "きゃ": "캬", "きゅ": "큐", "きょ": "쿄", "しゃ": "샤", "しゅ": "슈", "しょ": "쇼", "ちゃ": "챠", "ちゅ": "츄", "ちょ": "쵸", "にゃ": "냐", "にゅ": "뉴", "에": "뇨" }
+    };
+
+    let currentData = {};
+    let currentKey = "";
+    let score = 0;
+
+    function startQuiz(type) {
+        currentData = data[type];
+        score = 0;
+        document.getElementById('score').innerText = score;
+        document.getElementById('quiz-area').style.display = 'block';
+        nextQuestion();
+    }
+
+    function nextQuestion() {
+        const keys = Object.keys(currentData);
+        currentKey = keys[Math.floor(Math.random() * keys.length)];
+        document.getElementById('char-display').innerText = currentKey;
+        document.getElementById('answer-input').value = "";
+        document.getElementById('answer-input').focus();
+    }
+
+    function handleEnter(event) {
+        if (event.key === 'Enter') {
+            checkAnswer();
+        }
+    }
+
+    function checkAnswer() {
+        const input = document.getElementById('answer-input').value.trim();
+        const feedback = document.getElementById('feedback');
+        
+        if (input === currentData[currentKey]) {
+            feedback.innerText = "O";
+            feedback.className = "correct";
+            score++;
+            document.getElementById('score').innerText = score;
+            setTimeout(nextQuestion, 1000);
+        } else {
+            feedback.innerText = ` X 정답은 [${currentData[currentKey]}]`;
+            feedback.className = "wrong";
+        }
+    }
+</script>
+
+</body>
+</html>
