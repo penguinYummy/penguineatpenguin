@@ -70,6 +70,7 @@
             margin: 20px 0;
             font-weight: bold;
             color: var(--text);
+            min-height: 160px; /* 글자 위치 고정 */
         }
 
         input[type="text"] {
@@ -117,7 +118,7 @@
         </div>
         <div class="progress"><span id="current-idx-display">1</span> / <span id="total-idx-display">?</span></div>
         <div id="char-display">?</div>
-        <input type="text" id="answer-input" placeholder="발음 입력" autocomplete="off">
+        <input type="text" id="answer-input" placeholder="발음 입력 (한글)" autocomplete="off">
         <div id="feedback"></div>
         <button id="next-btn" class="action-btn" style="display:none;" onclick="handleNext()">다음 문제 (Enter/Space)</button>
     </div>
@@ -136,9 +137,9 @@
             "か": "카", "き": "키", "く": "쿠", "け": "케", "こ": "코",
             "さ": "사", "し": "시", "す": "스", "せ": "세", "そ": "소",
             "た": "타", "ち": "치", "つ": "츠", "て": "테", "と": "토",
-            "な": "나", "に": "니", "ぬ": "누", "ね": "네", "の": "노",
+            "な": "나", "에": "니", "ぬ": "누", "ね": "네", "の": "노",
             "は": "하", "ひ": "히", "ふ": "후", "へ": "헤", "ほ": "호",
-            "ま": "마", "미": "미", "む": "무", "め": "메", "も": "모",
+            "ま": "마", "み": "미", "む": "무", "め": "메", "も": "모",
             "や": "야", "ゆ": "유", "よ": "요",
             "ら": "라", "り": "리", "る": "루", "れ": "레", "ろ": "로",
             "わ": "와", "を": "오", "ん": "응"
@@ -147,7 +148,7 @@
             "が": "가", "ぎ": "기", "ぐ": "구", "げ": "게", "ご": "고",
             "ざ": "자", "じ": "지", "ず": "즈", "ぜ": "제", "ぞ": "조",
             "だ": "다", "ぢ": "지", "づ": "즈", "で": "데", "ど": "도",
-            "ば": "바", "비": "비", "ぶ": "부", "べ": "베", "ぼ": "보"
+            "ば": "바", "び": "비", "ぶ": "부", "べ": "베", "ぼ": "보"
         },
         hantakuon: {
             "ぱ": "파", "ぴ": "피", "ぷ": "푸", "ぺ": "페", "ぽ": "포"
@@ -156,8 +157,8 @@
             "きゃ": "캬", "きゅ": "큐", "きょ": "쿄",
             "しゃ": "샤", "しゅ": "슈", "しょ": "쇼",
             "ちゃ": "챠", "ちゅ": "츄", "ちょ": "쵸",
-            "にゃ": "냐", "에": "뉴", "にょ": "뇨",
-            "ひゃ": "탸", "ひゅ": "튜", "ひょ": "툐",
+            "にゃ": "냐", "にゅ": "뉴", "にょ": "뇨",
+            "ひゃ": "햐", "ひゅ": "휴", "ひょ": "효",
             "みゃ": "먀", "みゅ": "뮤", "みょ": "묘",
             "りゃ": "랴", "りゅ": "류", "りょ": "료",
             "ぎゃ": "갸", "ぎゅ": "규", "ぎょ": "교",
@@ -207,10 +208,13 @@
         feedback.innerText = "";
         nextBtn.style.display = "none";
         answered = false;
-        inputField.focus();
+        
+        setTimeout(() => inputField.focus(), 10);
     }
 
     function checkAnswer() {
+        if (answered) return;
+
         const input = inputField.value.trim();
         if (!input) return;
 
@@ -222,9 +226,10 @@
             feedback.style.color = "var(--success)";
             score++;
             document.getElementById('score').innerText = score;
+            // 정답일 때는 0.6초 후 자동으로 다음 문제
             setTimeout(handleNext, 600);
         } else {
-            feedback.innerText = `오답 정답 : [${correct}]`;
+            feedback.innerText = `오답 정답 : [${correct}] 입니다.`;
             feedback.style.color = "var(--error)";
             inputField.style.display = "none";
             nextBtn.style.display = "block";
@@ -247,15 +252,20 @@
         document.getElementById('main-menu').style.display = 'block';
     }
 
+    // 입력창 이벤트 핸들러
     inputField.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
+        if (e.key === 'Enter') {
             e.preventDefault();
-            if (!answered) checkAnswer();
+            if (!answered) {
+                checkAnswer();
+            }
         }
     });
 
+    // 오답 시 다음 버튼 이벤트 핸들러 (전체 화면 대상)
     window.addEventListener('keydown', (e) => {
         if ((e.key === 'Enter' || e.key === ' ') && nextBtn.style.display === 'block') {
+            e.preventDefault();
             handleNext();
         }
     });
